@@ -12,12 +12,9 @@ def login(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = LoginForm(request.POST)
-        username = request.POST['username']
-        password = request.POST['password']
         # check whether it's valid:
         if form.is_valid():
-            has_errors, message = check_user(username, password)
-            print(has_errors, message)
+            has_errors, message = check_user(form.cleaned_data['username'], form.cleaned_data['password'])
             if has_errors:
                 return render(request, 'registration/login.html',
                                 {'form': form, 'has_errors': has_errors, 'message': message})
