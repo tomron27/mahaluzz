@@ -2,6 +2,8 @@
 {% block content %}
 
 <!--login form-->
+<div class="container">
+<div class="row justify-content-center">
 <div class="row justify-content-center">
 <form method="post">
   {% csrf_token %}
@@ -19,7 +21,6 @@
       <input type="password" class="form-control" id="password" name="{{form.password.name}}" placeholder="הכנס סיסמה">
     </div>
   </div>
-
   <div class="form-group row justify-content-right">
     <div class="col-sm-6"></div>
 	<div class="col-sm-4">
@@ -29,21 +30,26 @@
       </div>
     </div>
   </div>
-
   <div class="form-group row justify-content-center">
     <div class="col-sm-10">
       <button type="submit" class="btn btn-primary btn-block">היכנס</button>
     </div>
   </div>
-
   <div class="form-group row justify-content-center">
     <div class="col-sm-6"></div>
 	<div class="col-sm-4">
 	  <a href="#">שכחתי סיסמה</a>
     </div>
   </div>
+  <div class="form-group row justify-content-center">
+      {% if has_errors %}
+	    <div class="alert alert-danger row justify-content-center col-sm-8" role="alert">{{ message }}</div>
+      {% endif %}
+  </div>
 
 </form>
+</div>
+</div>
 </div>
 
 {% endblock %}
