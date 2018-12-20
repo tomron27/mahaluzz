@@ -7,10 +7,16 @@ from django.utils.translation import ugettext_lazy as _
 # Create your views here.
 
 def login(request):
-    # if this is a POST request we need to process the form data
+    # Check if already logged in then redirect to home page
+    username = None
+    if 'username' in request.session:
+        username = request.session['username']
+        return render(request, 'home.html', {'username': username})
+
+    # Check existence of user in django user database
     has_errors = message = False
     if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
+        # create a form instance and populate it with data from the request
         form = LoginForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
@@ -19,10 +25,14 @@ def login(request):
                 return render(request, 'registration/login.html',
                                 {'form': form, 'has_errors': has_errors, 'message': message})
             else:
-                return render(request, 'home.html')
+                request.session['username'] = username = form.cleaned_data['username']
+                return render(request, 'home.html', {'username': username})
 
-    # if a GET (or any other method) we'll create a blank form
     else:
         form = LoginForm()
 
     return render(request, 'registration/login.html', {'form': form, 'has_errors': has_errors, 'message': message})
+
+def logout(request):
+    # TODO - proper logout (with cookie deletion)
+    return HttpResponse('bye')

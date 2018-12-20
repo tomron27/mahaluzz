@@ -7,7 +7,9 @@ urlpatterns = [
     # path('', views.home, name='schedule-home'),
     # path('language/', views.lang, name='schedule-lang-test'),
     # path('', LoginView.as_view()),
+    # path('', views.formView, name='main-form_view'),
     path('', views.login, name='main-login'),
+    path('logout', views.logout, name='main-logout'),
     # path('schedule', views.schedule, name='main-schedule'),
     # path('home', views.home, name='main-home')
     # path('', include('django.contrib.auth.urls')),
