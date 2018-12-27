@@ -46,10 +46,11 @@ class Event(models.Model):
     hour = models.PositiveIntegerField()
 
     def create(self):
-        self.save
+        self.save()
 
     def __str__(self):
-        self.name
+        return self.name
+
 
 # class Tconstraints(models.Model):
 #     teacher= models.CharField(max_length=30, primary_key=True)
