@@ -15,17 +15,13 @@ def login(request):
         form = LoginForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
-            has_errors, message,user_queryset = check_user(form.cleaned_data['username'], form.cleaned_data['password'])
+            has_errors, message, user_queryset = check_user(form.cleaned_data['username'], form.cleaned_data['password'])
             if has_errors:
                 # Error - Login Again
                 return render(request, 'registration/login.html',
                                 {'form': form, 'has_errors': has_errors, 'message': message})
             else:
-                #TODO: Jump to page by User Group
-
                 uid = user_queryset.values_list('id')
-                #print(uid)
-                #print(uid[0][0])
                 user = User.objects.get(id=uid[0][0])
                 print(user)
                 print(user.groups.all()[0])
@@ -33,10 +29,16 @@ def login(request):
                 print(type(user_Group))
                 print(user_Group.name)
                 if (user_Group.name == 'Parents'):
-                    return render(request, 'parent.html')
+                    #childs_list = find_
+                    parent_name = ' תום'
+                    #childs_classess =
+                    return render(request, 'parent.html', {'parent_name':parent_name})
                 if (user_Group.name == "Master"):
-                    print('OK')
+                    # master_name =
+                    #all_classes =
                     return render(request, 'master.html')
+                #teacher_class =
+                #teacher_name =
                 return render(request, 'teacher.html')
 
     # if a GET (or any other method) we'll create a blank form
