@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .forms import LoginForm
 from .user_auth import check_user
 from django.contrib.auth.models import User, Group
+from .models import *
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 
@@ -24,6 +25,8 @@ def login(request):
                 uid = user_queryset.values_list('id')
                 user_name = user_queryset.values_list('first_name')
                 user = User.objects.get(id=uid[0][0])
+                print(user_queryset.values())
+                print(user_name)
                 print(user)
                 print(user_name[0][0])
                 print(user.groups.all()[0])
@@ -31,7 +34,8 @@ def login(request):
                 print(type(user_Group))
                 print(user_Group.name)
                 if (user_Group.name == 'Parents'):
-                    #childs_list = find_
+                    childs_list = Student.objects.filter(Student.parent1==user or Student.parent2 == user)
+                    print(childs_list)
                     parent_name = user_name[0][0]
                     #childs_classess =
                     return render(request, 'parent.html', {'parent_name':parent_name})
