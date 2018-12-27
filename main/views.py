@@ -19,7 +19,8 @@ def login(request):
                 return render(request, 'registration/login.html',
                                 {'form': form, 'has_errors': has_errors, 'message': message})
             else:
-                return render(request, 'home.html')
+                # return render(request, 'parent.html')
+                return render(request, 'master.html')
 
     # if a GET (or any other method) we'll create a blank form
     else:
