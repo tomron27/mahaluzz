@@ -34,8 +34,8 @@ def login(request):
                 print(type(user_Group))
                 print(user_Group.name)
                 if (user_Group.name == 'Parents'):
-                    childs_list = Student.objects.filter(Student.parent1==user or Student.parent2 == user)
-                    print(childs_list)
+                    # childs_list = Student.objects.filter(Student.parent1==user or Student.parent2 == user)
+                    # print(childs_list)
                     parent_name = user_name[0][0]
                     #childs_classess =
                     return render(request, 'parent.html', {'parent_name':parent_name})
