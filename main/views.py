@@ -34,11 +34,17 @@ def login(request):
                 print(type(user_Group))
                 print(user_Group.name)
                 if (user_Group.name == 'Parents'):
-                    childs_list = Student.objects.filter(Student.parent1==user or Student.parent2 == user)
-                    print(childs_list)
+                    childs_list1 = Student.objects.filter(parent1=user)
+                    childs_list2 = Student.objects.filter(parent2=user)
+                    child_list_query = childs_list1.union(childs_list2)
+                    child_dict = {}
+                    for query in child_list_query:
+                        child_dict[query.first_name] = query.classroom
+                        print(query.first_name)
+                    print(child_dict)
                     parent_name = user_name[0][0]
-                    #childs_classess =
-                    return render(request, 'parent.html', {'parent_name':parent_name})
+
+                    return render(request, 'parent.html', {'parent_name': parent_name, 'child_dict': child_dict})
                 if (user_Group.name == "Master"):
                     # master_name = user_name[0][0]
                     #all_classes =
