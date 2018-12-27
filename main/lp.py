@@ -1,6 +1,8 @@
 import pandas as pd
 import itertools
 import pulp
+import os
+from mahaluzz.settings import BASE_DIR
 
 def solve():
 
@@ -43,7 +45,12 @@ def solve():
     edu_data = edu_data.drop_duplicates()
     print(edu_data.shape)
 
-    teachers_lesson_data = pd.read_csv('teacher_lessons.csv')
+    dummy_data =  {'Teacher': ['Ruti', 'Ruti', 'Shoshi', 'Shoshi'],
+                   'Lesson': ['Math', 'Science', 'Math', 'Science'],
+                   'Value': [1, 1, 0, 1]}
+
+    teachers_lesson_data = pd.DataFrame(data=dummy_data)
+
     print(teachers_lesson_data.shape)
 
     lessons_dict = pulp.LpVariable.dicts("variables",
@@ -76,7 +83,8 @@ def solve():
     for row in lessons_data[['Teacher', 'Day', 'Hour']].drop_duplicates().itertuples():
         lp_sum = []
         expr = pulp.LpAffineExpression()
-        for lesson_row in lessons_data[(lessons_data['Teacher'] == row.Teacher) & (lessons_data['Day'] == row.Day) & (lessons_data['Hour'] == row.Hour)].drop_duplicates().itertuples():
+        for lesson_row in lessons_data[(lessons_data['Teacher'] == row.Teacher) &
+                                       (lessons_data['Day'] == row.Day) & (lessons_data['Hour'] == row.Hour)].drop_duplicates().itertuples():
             lp_sum += lessons_dict[lesson_row.Day, lesson_row.Hour, lesson_row.Lesson, lesson_row.Class, lesson_row.Teacher]
         expr = (lp_sum <= 1)
     #     print(expr, '\n\n')
@@ -155,7 +163,9 @@ def solve():
     # Teacher lessons constraints
     for row in lessons_data.drop_duplicates().itertuples():
         expr = pulp.LpAffineExpression()
-        expr = (lessons_dict[row.Day, row.Hour, row.Lesson, row.Class, row.Teacher] <= teachers_lesson_data[(teachers_lesson_data['Teacher'] == row.Teacher) & (teachers_lesson_data['Lesson'] == row.Lesson)]['Value'])
+        expr = (lessons_dict[row.Day, row.Hour, row.Lesson, row.Class, row.Teacher] <=
+                teachers_lesson_data[(teachers_lesson_data['Teacher'] == row.Teacher) &
+                                     (teachers_lesson_data['Lesson'] == row.Lesson)]['Value'])
     #     print(expr, '\n\n')
         model += expr
 
