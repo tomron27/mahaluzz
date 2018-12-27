@@ -36,7 +36,7 @@ Tsubjects = [Tsubject(t_sub_id=1, teacher="ruti", subject="חשבון_א1"),
              Tsubject(t_sub_id=14, teacher="hila", subject="אומנות")]
 
 
-save(Classrooms, Classroom)
-save(Students, Student)
-save(Events, Event)
-save(Tsubjects, Tsubject)
+save(Classrooms)
+save(Students)
+save(Events)
+save(Tsubjects)

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, Group
 
 class Classroom(models.Model):
     name = models.CharField(max_length=5, primary_key=True)
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
+    teacher = models.CharField(max_length=30)
 
     def create(self):
         self.save()
@@ -21,7 +21,7 @@ class Student(models.Model):
     last_name = models.CharField(max_length=30)
     parent1 = models.CharField(max_length=30)
     parent2 = models.CharField(max_length=30)
-    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    classroom = models.CharField(max_length=5)
     birthday = models.DateField()
 
     def create(self):
@@ -35,8 +35,8 @@ class Schedule(models.Model):
     schedule_id = models.CharField(max_length=10, primary_key=True)
     day_of_week = models.PositiveIntegerField()
     hour = models.PositiveIntegerField()
-    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
+    classroom = models.CharField(max_length=5)
+    teacher = models.CharField(max_length=30)
     subject = models.CharField(max_length=30)
 
     def create(self):
@@ -61,7 +61,7 @@ class Event(models.Model):
 
 class Tconstraint(models.Model):
     t_con_id = models.CharField(max_length=10, primary_key=True)
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
+    teacher = models.CharField(max_length=30)
     day_of_week = models.PositiveIntegerField()
     hour = models.PositiveIntegerField()
     priority = models.PositiveIntegerField()
@@ -75,7 +75,7 @@ class Tconstraint(models.Model):
 
 class Tsubject(models.Model):
     t_sub_id = models.CharField(max_length=10, primary_key=True)
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
+    teacher = models.CharField(max_length=30)
     subject = models.CharField(max_length=30)
 
     def create(self):
