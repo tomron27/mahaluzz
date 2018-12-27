@@ -30,11 +30,14 @@ def login(request):
                 print(user)
                 print(user.groups.all()[0])
                 user_Group = user.groups.all()[0]
-                if (user_Group == 'Parents'):
-                    return render(request, 'home.html')
-                if (user_Group == 'Master'):
-                    return render(request, 'home.html')
-                return render(request, 'home.html')
+                print(type(user_Group))
+                print(user_Group.name)
+                if (user_Group.name == 'Parents'):
+                    return render(request, 'parent.html')
+                if (user_Group.name == "Master"):
+                    print('OK')
+                    return render(request, 'master.html')
+                return render(request, 'teacher.html')
 
     # if a GET (or any other method) we'll create a blank form
     else:

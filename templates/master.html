@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<p><h2 class="text-center">שלום אירית!</h2></p>
+  <div class="container">
+  <div class="row">
+    <div class="col">
+    	<div class="container">
+        <button type="button" class="btn btn-danger right" >הרכבת מערכת</button>
+        <div class="row">
+        	<div class="dropdown">
+  <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    אירועים ואילוצים
+</button>
+
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="#">הוספת אירוע</a>
+    <a class="dropdown-item" href="#">עריכת אירוע</a>
+    <a class="dropdown-item" href="#">הוספת אילוץ</a>
+  </div>
+</div>
+</div>
+		        <form>
+		        <div class="form-group">
+		    <legend for="textarea" align="right">הודעות הנהלה</legend>
+		    <textarea class="form-control" id="textarea" rows="3" style="min-width: 100%;"></textarea>
+		    <button type="submit" class="btn btn-info">שלח</button>
+		  		</div>
+				</form>
+		</div>
+
+		</div>
+
+
+    <div class="col-6">
+     <div class="googleCalendar">
+      	<iframe src="https://calendar.google.com/calendar/embed?title=Put%20your%20Title%20here&amp;showCalendars=0&amp;height=600&amp;wkst=1&amp;bgcolor=%23ffffff&amp;src=8d3fc8l9g04n7r9im45fsn08ak%40group.calendar.google.com&amp;color=%238D6F47&amp;ctz=America%2FNew_York" style="border-width:0" width="700" height="600" frameborder="0" scrolling="no"></iframe>
+     </div>
+    </div>
+    <div class="col">
+
+    	<div class="dropdown">
+  <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    דוחות
+      </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="#">מערכת שעות כיתתית</a>
+    <a class="dropdown-item" href="#">רשימת מורים</a>
+    <a class="dropdown-item" href="#">רשימת תלמידים</a>
+  </div>
+</div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
