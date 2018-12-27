@@ -5,11 +5,12 @@ from django.contrib.auth.models import User, Group
 
 class Classroom(models.Model):
     name = models.CharField(max_length=5, primary_key=True)
-    teacher = models.Foreignkey(User)
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def create(self):
         self.save()
 
+    @property
     def __str__(self):
         return self.name
 
@@ -18,9 +19,9 @@ class Student(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    parent1 = models.Foreignkey(User)
-    parent2 = models.Foreignkey(User)
-    classroom = models.Foreignkey(Classroom)
+    parent1 = models.CharField(max_length=30)
+    parent2 = models.CharField(max_length=30)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
     birthday = models.DateField()
 
     def create(self):
@@ -34,8 +35,8 @@ class Schedule(models.Model):
     schedule_id = models.CharField(max_length=10, primary_key=True)
     day_of_week = models.PositiveIntegerField()
     hour = models.PositiveIntegerField()
-    classroom = models.Foreignkey(Classroom)
-    teacher = models.Foreignkey(User)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
     subject = models.CharField(max_length=30)
 
     def create(self):
@@ -60,7 +61,7 @@ class Event(models.Model):
 
 class Tconstraint(models.Model):
     t_con_id = models.CharField(max_length=10, primary_key=True)
-    teacher = models.Foreignkey(User)
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
     day_of_week = models.PositiveIntegerField()
     hour = models.PositiveIntegerField()
     priority = models.PositiveIntegerField()
@@ -74,7 +75,7 @@ class Tconstraint(models.Model):
 
 class Tsubjects(models.Model):
     t_sub_id = models.CharField(max_length=10, primary_key=True)
-    teacher = models.Foreignkey(User)
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE)
     subject = models.CharField(max_length=30)
 
     def create(self):

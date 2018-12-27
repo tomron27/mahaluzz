@@ -34,24 +34,27 @@ def login(request):
                 print(type(user_Group))
                 print(user_Group.name)
                 if (user_Group.name == 'Parents'):
-                    childs_list1 = Student.objects.filter(parent1=user)
-                    childs_list2 = Student.objects.filter(parent2=user)
-                    child_list_query = childs_list1.union(childs_list2)
+                    child_list1 = Student.objects.filter(parent1=user)
+                    child_list2 = Student.objects.filter(parent2=user)
+                    child_list_query = child_list1.union(child_list2)
                     child_dict = {}
                     for query in child_list_query:
                         child_dict[query.first_name] = query.classroom
                         print(query.first_name)
                     print(child_dict)
                     parent_name = user_name[0][0]
-
                     return render(request, 'parent.html', {'parent_name': parent_name, 'child_dict': child_dict})
-                if (user_Group.name == "Master"):
-                    # master_name = user_name[0][0]
-                    #all_classes =
-                    return render(request, 'master.html')
+                if (user_Group.name == 'Master'):
+                    master_name = user_name[0][0]
+                    all_classes = Classroom.objects.order_by('name')
+                    classes_dict = {}
+                    for class_x in all_classes:
+                        classes_dict[class_x.name]=class_x.teacher
+                    print(classes_dict)
+                    return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
                 #teacher_class =
-                #teacher_name = user_name[0][0]
-                return render(request, 'teacher.html')
+                teacher_name = user_name[0][0]
+                return render(request, 'teacher.html', {'teacher_name': teacher_name})
 
     # if a GET (or any other method) we'll create a blank form
     else:
