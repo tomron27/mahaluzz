@@ -22,23 +22,25 @@ def login(request):
                                 {'form': form, 'has_errors': has_errors, 'message': message})
             else:
                 uid = user_queryset.values_list('id')
+                user_name = user_queryset.values_list('first_name')
                 user = User.objects.get(id=uid[0][0])
                 print(user)
+                print(user_name[0][0])
                 print(user.groups.all()[0])
                 user_Group = user.groups.all()[0]
                 print(type(user_Group))
                 print(user_Group.name)
                 if (user_Group.name == 'Parents'):
                     #childs_list = find_
-                    parent_name = ' תום'
+                    parent_name = user_name[0][0]
                     #childs_classess =
                     return render(request, 'parent.html', {'parent_name':parent_name})
                 if (user_Group.name == "Master"):
-                    # master_name =
+                    # master_name = user_name[0][0]
                     #all_classes =
                     return render(request, 'master.html')
                 #teacher_class =
-                #teacher_name =
+                #teacher_name = user_name[0][0]
                 return render(request, 'teacher.html')
 
     # if a GET (or any other method) we'll create a blank form
