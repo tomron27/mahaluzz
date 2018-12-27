@@ -10,12 +10,10 @@ def save(objects, table=None):
 
 Classrooms = [Classroom(name="א1", teacher="ruti"), Classroom(name="ג1", teacher="shush")]
 
-Students = [Student(id="302077633", first_name="שיר", last_name="כהן", parent1="haimcohen", parent2="dorit",
-            classroom="א1", birthday='2003-01-17'), Student(id="302077634", first_name="דורון", last_name="כהן"
-            , parent1="haimcohen", parent2="dorit", classroom="ג1", birthday='2005-01-20'),
-            Student(id="302077635", first_name="תום", last_name="כהן", parent1="haimcohen", parent2="dorit"
-            , classroom="ג1", birthday='2005-01-20'), Student(id="302077635", first_name="נעמי", last_name="טננבאום",
-            parent1="shaolm", parent2="noga", classroom="א1", birthday='2003-04-20')]
+Students = [Student(id="302077633", first_name="שיר", last_name="כהן", parent1="haimcohen", parent2="dorit", classroom="א1", birthday='2003-01-17'),
+            Student(id="302077634", first_name="דורון", last_name="כהן", parent1="haimcohen", parent2="dorit", classroom="ג1", birthday='2005-01-20'),
+            Student(id="302077635", first_name="תום", last_name="כהן", parent1="haimcohen", parent2="dorit", classroom="ג1", birthday='2005-01-20'),
+            Student(id="302077636", first_name="נעמי", last_name="טננבאום",parent1="shaolm", parent2="noga", classroom="א1", birthday='2003-04-20')]
 
 Events = [Event(name='טקס ט"ו בשבת', day=14, month=1, hour=8)]
 

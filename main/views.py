@@ -34,9 +34,13 @@ def login(request):
                 print(type(user_Group))
                 print(user_Group.name)
                 if (user_Group.name == 'Parents'):
+                    print(Student.objects.all()[2].parent2)
                     child_list1 = Student.objects.filter(parent1=user)
+                    print(len(child_list1))
                     child_list2 = Student.objects.filter(parent2=user)
+                    print(len(child_list2))
                     child_list_query = child_list1.union(child_list2)
+                    print(child_list_query)
                     child_dict = {}
                     for query in child_list_query:
                         child_dict[query.first_name] = query.classroom
