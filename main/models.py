@@ -73,7 +73,7 @@ class Tconstraint(models.Model):
         return self.t_con_id
 
 
-class Tsubjects(models.Model):
+class Tsubject(models.Model):
     t_sub_id = models.CharField(max_length=10, primary_key=True)
     teacher = models.ForeignKey(User, on_delete=models.CASCADE)
     subject = models.CharField(max_length=30)
