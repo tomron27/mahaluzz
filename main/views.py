@@ -53,7 +53,9 @@ def login(request):
                     all_classes = Classroom.objects.order_by('name')
                     classes_dict = {}
                     for class_x in all_classes:
-                        classes_dict[class_x.name]=class_x.teacher
+                        teacher = User.objects.get(username=class_x.teacher)
+                        print(teacher.first_name)
+                        classes_dict[class_x.name] = teacher.first_name
                     print(classes_dict)
                     return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
                 #teacher_class =
