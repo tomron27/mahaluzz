@@ -19,6 +19,18 @@ def get_teachers_with_subjects():
             teachers_lesson_data.loc[i] = (teacher_subject[0], teacher_subject[1], 0)
     return teachers_lesson_data
 
+def get_teachers():
+    query_list = Tsubject.objects.all().values_list()
+    return list(set([x[1] for x in query_list]))
+
+def get_lessons():
+    query_list = Tsubject.objects.all().values_list()
+    return list(set([x[2] for x in query_list]))
+
+def get_classes():
+    query_list = Tsubject.objects.all().values_list()
+    return list(set([x[2] for x in query_list]))
+
 def get_education_constratints():
     teachers_with_subjects = pd.DataFrame.from_records(Tsubject.objects.all().values())
     subjects_with_quants = pd.DataFrame.from_records(Aconstraint.objects.all().values())
@@ -38,9 +50,9 @@ def solve():
     # DRY Init
     DAYS = [1, 2, 3, 4, 5, 6]
     HOURS = [1, 2, 3, 4, 5, 6]
-    LESSONS = ['Math', 'Science']
+    LESSONS = get_lessons()
     CLASSES = ['A1', 'A2']
-    TEACHERS = ['Ruti', 'Shoshi']
+    TEACHERS = get_teachers()
 
     # Main basis for variables
     lessons_columns = ['Day', 'Hour', 'Lesson', 'Class', 'Teacher']
