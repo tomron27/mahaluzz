@@ -20,7 +20,7 @@ def get_teachers_with_subjects():
     return teachers_lesson_data
 
 def get_teachers():
-    query_list = Tsubject.objects.all().values_list()
+    query_list = Classroom.objects.all().values_list()
     return list(set([x[1] for x in query_list]))
 
 def get_lessons():
@@ -28,8 +28,8 @@ def get_lessons():
     return list(set([x[2] for x in query_list]))
 
 def get_classes():
-    query_list = Tsubject.objects.all().values_list()
-    return list(set([x[2] for x in query_list]))
+    query_list = Classroom.objects.all().values_list()
+    return list(set([x[0] for x in query_list]))
 
 def get_education_constratints():
     teachers_with_subjects = pd.DataFrame.from_records(Tsubject.objects.all().values())
@@ -41,9 +41,17 @@ def get_education_constratints():
 
     all = all[['name', 'subject', 'h_quantity']]\
         .drop_duplicates()\
-        .rename(columns={'name': 'Class', 'subject': 'Lesson', 'h_quantitiy': 'Value'})
+        .rename(columns={'name': 'Class', 'subject': 'Lesson', 'h_quantity': 'Value'})
 
     return all
+
+def get_teacher_constraints():
+    teacher_constraints = pd.DataFrame.from_records(Tconstraint.objects.all().values())
+    teacher_constraints = teacher_constraints[['teacher', 'day_of_week', 'hour', 'priority']]
+    teacher_constraints = teacher_constraints.rename(columns={'teacher': 'Teacher', 'day_of_week': 'Day', 'hour': 'Hour', 'priority': 'Value'})\
+        .drop_duplicates()
+
+    return teacher_constraints
 
 def solve():
 
@@ -51,19 +59,11 @@ def solve():
     DAYS = [1, 2, 3, 4, 5, 6]
     HOURS = [1, 2, 3, 4, 5, 6]
     LESSONS = get_lessons()
-    CLASSES = ['A1', 'A2']
+    CLASSES = get_classes()
     TEACHERS = get_teachers()
 
-    # Main basis for variables
-    lessons_columns = ['Day', 'Hour', 'Lesson', 'Class', 'Teacher']
-    lessons_data = pd.DataFrame(columns=lessons_columns)
-    lessons_cart_input = (DAYS, HOURS, LESSONS, CLASSES, TEACHERS)
-
     # Teacher constraints data
-    # TODO - replace with query
-    teachers_const_columns = ['Teacher', 'Day', 'Hour', 'Value']
-    teachers_data = pd.DataFrame(columns=teachers_const_columns)
-    teachers_cart_input = (TEACHERS, DAYS, HOURS, [1])
+    teachers_data = get_teacher_constraints()
 
     # Dep. of education constraints
     edu_data = get_education_constratints()
@@ -71,24 +71,27 @@ def solve():
     # Teachers that teach certain lessons
     teachers_lesson_data = get_teachers_with_subjects()
 
-    # Create cartesian outputs
-    lessons_cart = itertools.product(*lessons_cart_input, repeat=1)
-    teachers_cart = itertools.product(*teachers_cart_input, repeat=1)
+    # Main basis for variables
+    lessons_cart = itertools.product(DAYS, HOURS, LESSONS, CLASSES, TEACHERS, repeat=1)
+    lessons_data = pd.DataFrame.from_records(lessons_cart, columns=['Day', 'Hour', 'Lesson', 'Class', 'Teacher'])
 
     print('expected num of variables: {}'.format(len(DAYS) * len(HOURS) * len(LESSONS) * len(CLASSES) * len(TEACHERS)))
 
-    for i, out in enumerate(lessons_cart):
-        lessons_data.loc[i] = out
-    print(lessons_data.shape)
-
-    for i, out in enumerate(teachers_cart):
-        teachers_data.loc[i] = out
-    teachers_data = teachers_data.drop_duplicates()
+    print('teachers_data')
+    print(teachers_data.head(10))
     print(teachers_data.shape)
 
+    print('edu_data')
+    print(edu_data.head(10))
     print(edu_data.shape)
 
+    print('teachers_lesson_data')
+    print(teachers_lesson_data.head(10))
     print(teachers_lesson_data.shape)
+
+    print('lessons_data')
+    print(lessons_data.head(10))
+    print(lessons_data.shape)
 
     lessons_dict = pulp.LpVariable.dicts("variables",
                                          ((row.Day, row.Hour, row.Lesson, row.Class, row.Teacher) for row in
@@ -97,6 +100,9 @@ def solve():
                                          cat='Binary')
 
     all_data = lessons_data.merge(teachers_data, on=['Teacher', 'Day', 'Hour'])
+
+    print(all_data.head(1))
+
     model = pulp.LpProblem("Minimize amount of lessons", pulp.LpMinimize)
 
     # Objective function build
@@ -205,6 +211,8 @@ def solve():
                                      (teachers_lesson_data['Lesson'] == row.Lesson)]['Value'])
     #     print(expr, '\n\n')
         model += expr
+
+    print(model)
 
     model.solve()
 
