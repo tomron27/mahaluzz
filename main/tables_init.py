@@ -9,14 +9,14 @@ def save(objects, table=None):
 
 
 Classrooms = [Classroom(name="א1", teacher="ruti"), Classroom(name="ג1", teacher="shush"),
-              Classroom(name="ב2", teacher="hadar"),Classroom(name="ד2", teacher="shlomit")]
+              Classroom(name="ב2", teacher="hadar"), Classroom(name="ד2", teacher="shlomit")]
 
 Students = [Student(id="302077633", first_name="שיר", last_name="כהן", parent1="haimcohen", parent2="dorit",
             classroom="א1", birthday='2013-01-17'), Student(id="302077634", first_name="דורון",
             last_name="כהן", parent1="haimcohen", parent2="dorit", classroom="ג1", birthday='2011-01-20'),
             Student(id="302077635", first_name="תום", last_name="כהן", parent1="haimcohen", parent2="dorit",
             classroom="ב2", birthday='2012-01-20'), Student(id="302077636", first_name="נעמי",
-            last_name="טננבאום",parent1="shaolm", parent2="noga", classroom="ד2", birthday='2010-04-20')]
+            last_name="טננבאום", parent1="shaolm", parent2="noga", classroom="ד2", birthday='2010-04-20')]
 
 Events = [Event(name='טקס ט"ו בשבת', day=14, month=1, hour=8)]
 
@@ -127,5 +127,11 @@ save(Classrooms)
 save(Students)
 save(Events)
 save(Tsubjects)
-save(Schedules)
+save(Schedules, Schedule)
 save(Aconstraints)
+
+def insert_schedule(schedule_output):
+    if schedule_output[0] == 'Optimal':
+        for i, lesson in enumerate(schedule_output[1]):
+            row = Schedule(schedule_id=i, day_of_week=lesson[0], hour=lesson[2], classroom=lesson[3], teacher=lesson[4], subject=lesson[2])
+            row.save()

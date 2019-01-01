@@ -171,4 +171,8 @@ def solve():
 
     model.solve()
 
-    return pulp.LpStatus[model.status], lessons_dict
+    lessons_output = []
+    for k, v in lessons_dict.items():
+        if v.varValue == 1:
+            lessons_output.append(k)
+    return pulp.LpStatus[model.status], lessons_output

@@ -24,6 +24,7 @@ def login(request):
                 return render(request, 'registration/login.html',
                                 {'form': form, 'has_errors': has_errors, 'message': message})
             else:
+                dates = get_current_weekdates()
                 uid = user_queryset.values_list('id')
                 user_name = user_queryset.values_list('first_name')
                 user = User.objects.get(id=uid[0][0])
@@ -36,30 +37,27 @@ def login(request):
                 print(type(user_Group))
                 print(user_Group.name)
                 if (user_Group.name == 'Parents'):
-                    print(Student.objects.all()[2].parent2)
-                    child_list1 = Student.objects.filter(parent1=user)
-                    print(len(child_list1))
-                    child_list2 = Student.objects.filter(parent2=user)
-                    print(len(child_list2))
-                    child_list_query = child_list1.union(child_list2)
-                    print(child_list_query)
-                    child_dict = {}
-                    for query in child_list_query:
-                        child_dict[query.first_name] = query.classroom
-                        print(query.first_name)
-                    print(child_dict)
                     parent_name = user_name[0][0]
-                    return render(request, 'parent.html', {'parent_name': parent_name, 'child_dict': child_dict})
+                    child_list1 = Student.objects.filter(parent1=user)
+                    child_list2 = Student.objects.filter(parent2=user)
+                    child_list_query = child_list1.union(child_list2)
+                    children_dict = {}
+                    for query in child_list_query:
+                        child_name = query.first_name
+                        classroom = query.classroom
+                        schedule = {'dates': dates, 'schedule_data': return_schedule(classroom, 'Classroom')}
+                        children_dict[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule}
+                    return render(request, 'parent.html', {'parent_name': parent_name, 'children_dict': children_dict})
                 if (user_Group.name == 'Master'):
                     master_name = user_name[0][0]
                     all_classes = Classroom.objects.order_by('name')
                     classes_dict = {}
                     for class_x in all_classes:
-                        teacher = User.objects.get(username=class_x.teacher)
-                        print(teacher.first_name)
-                        classes_dict[class_x.name] = teacher.first_name
+                        name_teacher = User.objects.get(username=class_x.teacher)
+                        print(name_teacher.first_name)
+                        classes_dict[class_x.name] = name_teacher.first_name
                     print(classes_dict)
-                    return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
+                    return master(request, master_name, classes_dict)
                 #teacher_class =
                 teacher_name = user_name[0][0]
                 return render(request, 'teacher.html', {'teacher_name': teacher_name})
@@ -70,19 +68,51 @@ def login(request):
 
     return render(request, 'registration/login.html', {'form': form, 'has_errors': has_errors, 'message': message})
 
+def parent(request,parent_name,child_dict):
+    return render(request, 'parent.html', {'parent_name': parent_name, 'child_dict': child_dict})
+
+def master(request,master_name,classes_dict):
+    return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
+
+
+def teacher(request, teacher_name):
+    print(request.POST)
+    if request.method == 'POST' and 'btnform1' in request.POST:
+        return constraints(request, teacher_name)
+    return render(request, 'teacher.html', {'teacher_name': teacher_name})
 
 def return_schedule(entity, entity_type):
-    if entity_type == 'Children':
-        # {Child: Class} dict
-        for child, child_classroom in entity.items():
-            lesson_dict = {}
-            schedule_queryset = Schedule.objects.filter(classroom=child_classroom).order_by('day_of_week', 'hour')
-            groups = itertools.groupby(schedule_queryset, lambda x: x.day_of_week)
-            for key, group in groups:
-                if key not in lesson_dict:
-                    lesson_dict[key] = list(group)
-                else:
-                    lesson_dict[key] += list(group)
+    lesson_dict = {}    # {Entity: Entity Lessons}
+    if entity_type == 'Classroom':
+        schedule_queryset = Schedule.objects.filter(classroom=entity).order_by('day_of_week', 'hour')
+    elif entity_type == 'Teacher':
+        schedule_queryset = Schedule.objects.filter(teacher=entity).order_by('day_of_week', 'hour')
 
-            hours_with_lessons = [{'hour': k, 'lesson': lesson_dict[k]} for k in lesson_dict]
+    groups = itertools.groupby(schedule_queryset, lambda x: x.day_of_week)
+    for key, group in groups:
+        if key not in lesson_dict:
+            lesson_dict[key] = list(group)
+        else:
+            lesson_dict[key] += list(group)
+
+    hours_with_lessons = [{'hour': k, 'lesson': lesson_dict[k]} for k in lesson_dict]
+    return hours_with_lessons
+
+def get_current_weekdates():
+    today = datetime.date.today()
+    last_sunday = today - datetime.timedelta(days=today.weekday()+1)
+    raw_dates = [last_sunday + datetime.timedelta(days=i) for i in range(6)]
+    dates = []
+    for x in raw_dates:
+        dates.append((_(x.strftime("%A"))) + ' ' + x.strftime("%d/%m/%y"))
+    return dates
+
+def constraints(request, teacher_name):
+    print(teacher_name)
+    if request.method == 'POST':
+        print(request.POST)
+    return render(request, 'constraint.html')
+
+def constraints_test(request, teacher_name=None):
+    return render(request, 'constraints_test.html', {'teacher_name': teacher_name})
 
