@@ -108,6 +108,11 @@ def get_current_weekdates():
     return dates
 
 def constraints(request, teacher_name):
+    print(teacher_name)
     if request.method == 'POST':
         print(request.POST)
     return render(request, 'constraint.html')
+
+def constraints_test(request, teacher_name=None):
+    return render(request, 'constraints_test.html', {'teacher_name': teacher_name})
+
