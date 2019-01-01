@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from .forms import LoginForm
+from django.shortcuts import render, redirect
+from .forms import LoginForm, MessageForm
 from .user_auth import check_user
 from django.contrib.auth.models import User, Group
 from .models import *
@@ -53,7 +53,8 @@ def login(request):
                     return master(request, master_name, classes_dict)
                 #teacher_class =
                 teacher_name = user_name[0][0]
-                return render(request, 'teacher.html', {'teacher_name': teacher_name})
+                # return render(request, 'teacher.html', {'teacher_name': teacher_name})
+                return redirect('teacher', teacher_name=teacher_name)
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -67,9 +68,13 @@ def parent(request,parent_name,child_dict):
 def master(request,master_name,classes_dict):
     return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
 
-
 def teacher(request, teacher_name):
-    print(request.POST)
+    if request.method == 'POST':
+        print(request.POST)
+        message_form = MessageForm(request.POST)
+        message = request.POST.dict()
+        print(type(message), message)
+        print(message["textarea"])
     if request.method == 'POST' and 'btnform1' in request.POST:
         return constraints(request, teacher_name)
     return render(request, 'teacher.html', {'teacher_name': teacher_name})
@@ -120,7 +125,7 @@ def constraints(request, teacher_name):
         for i,x in enumerate(con_dict):
             x_list = list(x)
             print(x_list)
-            u_name = User.objects.get(first_name = teacher_name)
+            u_name = User.objects.get(first_name=teacher_name)
             print(str(u_name))
             Tcons = Tconstraint(t_con_id=i, teacher=str(u_name), day_of_week=x_list[1], hour=x_list[3], priority=con_dict[x])
             Tcons.save()
