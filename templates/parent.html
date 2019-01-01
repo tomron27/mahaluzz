@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
+     <style type="text/css">
+     .card-header{
+         background: none;
+         outline: none;
+     }
+     </style>
+
+    <div class="container" align="right">
+
 	<p>
     <h2>שלום {{parent_name}}!</h2>
     </p>
@@ -13,7 +22,7 @@
 })
 </script>
 
-    <div id="accordion">
+    <div id="accordion" >
         {% for child,class in child_dict.items %}
             <!--child1 dropdown-->
     	    <div  class="card">
@@ -52,5 +61,6 @@
     			</div>
     		</div>
         {% endfor %}
+    </div>
     </div>
 {% endblock %}
