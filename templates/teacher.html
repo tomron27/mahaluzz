@@ -16,15 +16,15 @@
     <div class="col-4">
 
     	<div class="container">
-            <a href="{% url 'constraint' teacher_name %}" >הכנסת אילוץ נסיון</a>
-		<form method="post">
-			{% csrf_token %}
-			{{form1.as_p}}
-        	<button type="submit" name="btnform1" class="btn btn-primary btn-block" >הכנסת אילוץ</button>
-		</form>
+            <a href="{% url 'constraint' teacher_name %}" >
+    			<button type="submit" name="btnform1" class="btn btn-primary btn-block" >הכנסת אילוץ</button>
+			</a>
+
         <div class="row">
 
-		        <form>
+		 <form method="post">
+			 {% csrf_token %}
+			 {{form1.as_p}}
 		        <div class="form-group">
 		    <legend for="textarea" align="right">הודעה להורים רשום כאן:</legend>
 		    <textarea class="form-control" id="textarea" rows="3" style="min-width: 100%;"></textarea>
