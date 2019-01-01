@@ -7,6 +7,7 @@ import itertools
 import datetime
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
+from main.tables_init import *
 
 # Create your views here.
 
@@ -110,7 +111,15 @@ def get_current_weekdates():
 def constraints(request, teacher_name):
     print(teacher_name)
     if request.method == 'POST':
-        print(request.POST)
+        con_dict = request.POST.dict()
+        con_dict.pop("csrfmiddlewaretoken", None)
+        Tconstraints = []
+        for i,x in enumerate(con_dict):
+            x_list = list(x)
+            print(x_list)
+            Tcons = Tconstraint(t_con_id=i, teacher=teacher_name, day_of_week=x_list[1], hour=x_list[3], priority=con_dict[x])
+            Tcons.save()
+        #save(Tconstraints)
     return render(request, 'constraint.html')
 
 def constraints_test(request, teacher_name=None):
