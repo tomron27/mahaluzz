@@ -4,8 +4,13 @@
   <div class="container">
     <div class="row">
     <div class="col-4">
+
     	<div class="container">
-        <button type="button" class="btn btn-danger right" >הכנסת אילוץ</button>
+		<form method="post">
+			{% csrf_token %}
+			{{form1.as_p}}
+        	<button type="submit" name="btnform1" class="btn btn-primary btn-block" >הכנסת אילוץ</button>
+		</form>
         <div class="row">
 
 		        <form>

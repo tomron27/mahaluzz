@@ -3,6 +3,8 @@ from .forms import LoginForm
 from .user_auth import check_user
 from django.contrib.auth.models import User, Group
 from .models import *
+import itertools
+import datetime
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 
@@ -47,23 +49,58 @@ def login(request):
                         print(query.first_name)
                     print(child_dict)
                     parent_name = user_name[0][0]
-                    return render(request, 'parent.html', {'parent_name': parent_name, 'child_dict': child_dict})
+                    return parent(request, parent_name, child_dict)
                 if (user_Group.name == 'Master'):
                     master_name = user_name[0][0]
                     all_classes = Classroom.objects.order_by('name')
                     classes_dict = {}
                     for class_x in all_classes:
-                        teacher = User.objects.get(username=class_x.teacher)
-                        print(teacher.first_name)
-                        classes_dict[class_x.name] = teacher.first_name
+                        name_teacher = User.objects.get(username=class_x.teacher)
+                        print(name_teacher.first_name)
+                        classes_dict[class_x.name] = name_teacher.first_name
                     print(classes_dict)
-                    return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
+                    return master(request, master_name, classes_dict)
                 #teacher_class =
                 teacher_name = user_name[0][0]
-                return render(request, 'teacher.html', {'teacher_name': teacher_name})
+                request = render(request, 'teacher.html', {'teacher_name': teacher_name})
+                return teacher(request, teacher_name)
 
     # if a GET (or any other method) we'll create a blank form
     else:
         form = LoginForm()
 
     return render(request, 'registration/login.html', {'form': form, 'has_errors': has_errors, 'message': message})
+
+def parent(request,parent_name,child_dict):
+    return render(request, 'parent.html', {'parent_name': parent_name, 'child_dict': child_dict})
+
+def master(request,master_name,classes_dict):
+    return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
+
+
+def teacher(request, teacher_name):
+    print(request.POST)
+    if request.method == 'POST' and 'btnform1' in request.POST:
+        return constraints(request, teacher_name)
+    return render(request, 'teacher.html', {'teacher_name': teacher_name})
+
+def return_schedule(entity, entity_type):
+    if entity_type == 'Children':
+        # {Child: Class} dict
+        for child, child_classroom in entity.items():
+            lesson_dict = {}
+            schedule_queryset = Schedule.objects.filter(classroom=child_classroom).order_by('day_of_week', 'hour')
+            groups = itertools.groupby(schedule_queryset, lambda x: x.day_of_week)
+            for key, group in groups:
+                if key not in lesson_dict:
+                    lesson_dict[key] = list(group)
+                else:
+                    lesson_dict[key] += list(group)
+
+            hours_with_lessons = [{'hour': k, 'lesson': lesson_dict[k]} for k in lesson_dict]
+
+
+def constraints(request, teacher_name):
+    if request.method == 'POST':
+        print(request.POST)
+    return render(request, 'constraint.html')

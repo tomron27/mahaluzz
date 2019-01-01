@@ -28,8 +28,8 @@
     <h2>:הכנסת אילוצים</h2>
     <p>.בחר את השעות בהן אתה לא יכול ללמד. סמן אותן באדום</p>
 	<p>.בחר את השעות בהן תוכל ללמד, אולם אתה מעדיף שלא. סמן אותן בצהוב</p>
-	<form action="/action_page.php">
-
+<form method="post">
+{% csrf_token %}
 	<div class="container">
   <table class="table table-bordered">
     <thead>
@@ -349,7 +349,7 @@
     </tbody>
   </table>
 
-   <button type="submit" class="btn btn-primary">הגש</button>
+   <button type="submit" class="btn btn-primary btn-block">הגש</button>
   </form>
 </div>
 
