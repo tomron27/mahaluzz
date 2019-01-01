@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </head>
@@ -27,7 +27,7 @@
 <div class="container" align="right">
     <h2>:הכנסת אילוצים</h2>
     <p>.בחר את השעות בהן אתה לא יכול ללמד. סמן אותן באדום</p>
-	<p>.בחר את השעות בהן תוכל ללמד, אולם אתה מעדי שלא. סמן אותן בצהוב</p>
+	<p>.בחר את השעות בהן תוכל ללמד, אולם אתה מעדיף שלא. סמן אותן בצהוב</p>
 	<form action="/action_page.php">
 
 	<div class="container">
@@ -44,6 +44,7 @@
       </tr>
     </thead>
     <tbody>
+
       <tr>
         <td>08:00</td>
 
@@ -123,7 +124,7 @@
 	   <td>
 	  <select name="M4,9" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
+      <option value="1" style = "background-color:Red">מעדיף שלא</option>
       <option value="2">לא פנוי</option>
 	  </select>
 	  </td>
