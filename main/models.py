@@ -73,6 +73,18 @@ class Tconstraint(models.Model):
         return self.t_con_id
 
 
+class Aconstraint(models.Model):
+    a_con_id = models.CharField(max_length=10, primary_key=True)
+    subject = models.CharField(max_length=30)
+    h_quantity = models.PositiveIntegerField()
+
+    def create(self):
+        self.save()
+
+    def __str__(self):
+        return self.a_con_id
+
+
 class Tsubject(models.Model):
     t_sub_id = models.CharField(max_length=10, primary_key=True)
     teacher = models.CharField(max_length=30)
