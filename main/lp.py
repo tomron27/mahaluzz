@@ -1,33 +1,67 @@
 import pandas as pd
 import itertools
 import pulp
+from main.models import *
 import os
 from mahaluzz.settings import BASE_DIR
+
+def get_teachers_with_subjects():
+    query_list = Tsubject.objects.all().values_list()
+    teachers = list(set([x[1] for x in query_list]))
+    subjects = list(set([x[2] for x in query_list]))
+    teachers_with_subjects = set([(x[1], x[2]) for x in query_list])
+    cartesian = itertools.product(teachers, subjects, repeat=1)
+    teachers_lesson_data = pd.DataFrame(columns=['Teacher', 'Lesson', 'Value'])
+    for i, teacher_subject in enumerate(cartesian):
+        if teacher_subject in teachers_with_subjects:
+            teachers_lesson_data.loc[i] = (teacher_subject[0], teacher_subject[1], 1)
+        else:
+            teachers_lesson_data.loc[i] = (teacher_subject[0], teacher_subject[1], 0)
+    return teachers_lesson_data
+
+def get_education_constratints():
+    teachers_with_subjects = pd.DataFrame.from_records(Tsubject.objects.all().values())
+    subjects_with_quants = pd.DataFrame.from_records(Aconstraint.objects.all().values())
+    teachers_with_classrooms = pd.DataFrame.from_records(Classroom.objects.all().values())
+
+    all = teachers_with_subjects.merge(subjects_with_quants, on=['subject'])\
+        .merge(teachers_with_classrooms, on=['teacher'])
+
+    all = all[['name', 'subject', 'h_quantity']]\
+        .drop_duplicates()\
+        .rename(columns={'name': 'Class', 'subject': 'Lesson', 'h_quantitiy': 'Value'})
+
+    return all
 
 def solve():
 
     # DRY Init
-    DAYS = [1, 2, 3]
+    DAYS = [1, 2, 3, 4, 5, 6]
     HOURS = [1, 2, 3, 4, 5, 6]
     LESSONS = ['Math', 'Science']
     CLASSES = ['A1', 'A2']
     TEACHERS = ['Ruti', 'Shoshi']
 
+    # Main basis for variables
     lessons_columns = ['Day', 'Hour', 'Lesson', 'Class', 'Teacher']
     lessons_data = pd.DataFrame(columns=lessons_columns)
     lessons_cart_input = (DAYS, HOURS, LESSONS, CLASSES, TEACHERS)
 
+    # Teacher constraints data
+    # TODO - replace with query
     teachers_const_columns = ['Teacher', 'Day', 'Hour', 'Value']
     teachers_data = pd.DataFrame(columns=teachers_const_columns)
     teachers_cart_input = (TEACHERS, DAYS, HOURS, [1])
 
-    edu_const_columns = ['Class', 'Lesson', 'Value']
-    edu_data = pd.DataFrame(columns=edu_const_columns)
-    edu_cart_input = (CLASSES, LESSONS, [3])
+    # Dep. of education constraints
+    edu_data = get_education_constratints()
 
+    # Teachers that teach certain lessons
+    teachers_lesson_data = get_teachers_with_subjects()
+
+    # Create cartesian outputs
     lessons_cart = itertools.product(*lessons_cart_input, repeat=1)
     teachers_cart = itertools.product(*teachers_cart_input, repeat=1)
-    edu_cart = itertools.product(*edu_cart_input, repeat=1)
 
     print('expected num of variables: {}'.format(len(DAYS) * len(HOURS) * len(LESSONS) * len(CLASSES) * len(TEACHERS)))
 
@@ -40,16 +74,7 @@ def solve():
     teachers_data = teachers_data.drop_duplicates()
     print(teachers_data.shape)
 
-    for i, out in enumerate(edu_cart):
-        edu_data.loc[i] = out
-    edu_data = edu_data.drop_duplicates()
     print(edu_data.shape)
-
-    dummy_data =  {'Teacher': ['Ruti', 'Ruti', 'Shoshi', 'Shoshi'],
-                   'Lesson': ['Math', 'Science', 'Math', 'Science'],
-                   'Value': [1, 1, 0, 1]}
-
-    teachers_lesson_data = pd.DataFrame(data=dummy_data)
 
     print(teachers_lesson_data.shape)
 

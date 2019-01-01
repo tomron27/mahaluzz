@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
+    <div class="container" align="right">
+
 <p><h2 class="text-center">שלום {{teacher_name}}!</h2></p>
+         <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="left" title="ברוך הבא! להוספת אילוץ אנה לחץ על כפתור הכנסת אילוץ. לשליחת הודעות להורים, יש לכתוב את תוכן ההודעות במקום המיועד וללחוץ על כפתור שלח. מערכת השעות של הכיתה שלך מופיע משמאל.">מבקר בפעם הראשונה?</button>
+
+<script>
+	$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
   <div class="container">
     <div class="row">
     <div class="col-4">
@@ -16,9 +26,10 @@
 			 {% csrf_token %}
 			 {{form1.as_p}}
 		        <div class="form-group">
-		    <legend for="textarea" align="right">חלון השארת הודעה</legend>
+		    <legend for="textarea" align="right">הודעה להורים רשום כאן:</legend>
 		    <textarea class="form-control" id="textarea" rows="3" style="min-width: 100%;"></textarea>
-		    <button type="submit" class="btn btn-info">שלח</button>
+                    <h1> </h1>
+		    <button type="submit" class="btn btn-info" style="padding: padding-top">שלח</button>
 		  		</div>
 				</form>
 		</div>
@@ -56,15 +67,16 @@
   <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     דוחות
       </button>
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
     <a class="dropdown-item" href="#">רשימת תלמידים</a>
     <a class="dropdown-item" href="#">ריכוז אישורים</a>
     <a class="dropdown-item" href="#">רשימת ימי הולדת</a>
     <a class="dropdown-item" href="#">הודעות הנהלה</a>
-  </div>
-</div>
-
     </div>
-  </div>
-</div>
+    </div>
+
+        </div>
+        </div>
+    </div>
+    </div>
 {% endblock %}
