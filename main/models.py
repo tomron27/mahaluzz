@@ -96,3 +96,13 @@ class Tsubject(models.Model):
     def __str__(self):
         return self.t_sub_id
 
+class Messeges(models.Model):
+    teacher = models.CharField(max_length=30)
+    classroom = models.CharField(max_length=5)
+
+
+    def create(self):
+        self.save()
+
+    def __str__(self):
+        return self.t_sub_id

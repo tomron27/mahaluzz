@@ -13,7 +13,9 @@
 		</form>
         <div class="row">
 
-		        <form>
+		 <form method="post">
+			 {% csrf_token %}
+			 {{form1.as_p}}
 		        <div class="form-group">
 		    <legend for="textarea" align="right">חלון השארת הודעה</legend>
 		    <textarea class="form-control" id="textarea" rows="3" style="min-width: 100%;"></textarea>
