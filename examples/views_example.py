@@ -32,10 +32,10 @@ def home(request):
 
     # Query a {hour: [lesson1, lesson2, ..]} dict
     lesson_dict = {}
-	
-	# Query example:
+
+    # Query example:
     result = Lesson.objects.order_by('start_time')
-	
+
     groups = itertools.groupby(result, lambda x: x.start_time.strftime("%H:%M"))
     for key, group in groups:
         if key not in lesson_dict:

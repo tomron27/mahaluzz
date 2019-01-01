@@ -3,6 +3,8 @@ from .forms import LoginForm
 from .user_auth import check_user
 from django.contrib.auth.models import User, Group
 from .models import *
+import itertools
+import datetime
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 
@@ -53,7 +55,9 @@ def login(request):
                     all_classes = Classroom.objects.order_by('name')
                     classes_dict = {}
                     for class_x in all_classes:
-                        classes_dict[class_x.name]=class_x.teacher
+                        teacher = User.objects.get(username=class_x.teacher)
+                        print(teacher.first_name)
+                        classes_dict[class_x.name] = teacher.first_name
                     print(classes_dict)
                     return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
                 #teacher_class =
@@ -65,3 +69,20 @@ def login(request):
         form = LoginForm()
 
     return render(request, 'registration/login.html', {'form': form, 'has_errors': has_errors, 'message': message})
+
+
+def return_schedule(entity, entity_type):
+    if entity_type == 'Children':
+        # {Child: Class} dict
+        for child, child_classroom in entity.items():
+            lesson_dict = {}
+            schedule_queryset = Schedule.objects.filter(classroom=child_classroom).order_by('day_of_week', 'hour')
+            groups = itertools.groupby(schedule_queryset, lambda x: x.day_of_week)
+            for key, group in groups:
+                if key not in lesson_dict:
+                    lesson_dict[key] = list(group)
+                else:
+                    lesson_dict[key] += list(group)
+
+            hours_with_lessons = [{'hour': k, 'lesson': lesson_dict[k]} for k in lesson_dict]
+
