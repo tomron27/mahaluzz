@@ -30,14 +30,7 @@ def login(request):
                 uid = user_queryset.values_list('id')
                 user_name = user_queryset.values_list('first_name')
                 user = User.objects.get(id=uid[0][0])
-                print(user_queryset.values())
-                print(user_name)
-                print(user)
-                print(user_name[0][0])
-                print(user.groups.all()[0])
                 user_Group = user.groups.all()[0]
-                print(type(user_Group))
-                print(user_Group.name)
                 if (user_Group.name == 'Parents'):
                     parent_name = user_name[0][0]
                     child_list1 = Student.objects.filter(parent1=user)
@@ -56,9 +49,7 @@ def login(request):
                     classes_dict = {}
                     for class_x in all_classes:
                         name_teacher = User.objects.get(username=class_x.teacher)
-                        print(name_teacher.first_name)
                         classes_dict[class_x.name] = name_teacher.first_name
-                    print(classes_dict)
                     return master(request, master_name, classes_dict)
                 #teacher_class =
                 teacher_name = user_name[0][0]
