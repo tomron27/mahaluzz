@@ -3,6 +3,7 @@ from .forms import LoginForm
 from .user_auth import check_user
 from django.contrib.auth.models import User, Group
 from .models import *
+import main.lp as lp
 import itertools
 import datetime
 from django.http import HttpResponse
@@ -98,6 +99,17 @@ def return_schedule(entity, entity_type):
 
     hours_with_lessons = [{'hour': k, 'lesson': lesson_dict[k]} for k in lesson_dict]
     return hours_with_lessons
+
+def solve_and_push_schedule():
+    print('Starting LP problem...')
+    sol_status, sol = lp.solve()
+    if sol_status == 'Optimal':
+        Schedule.objects.all().delete()
+        print('Saving schedule to database...')
+        for i, item in enumerate(sol):
+            sched_item = Schedule(schedule_id=i, day_of_week=item[0], hour=item[1], classroom=item[3], teacher=item[4], subject=item[2])
+            sched_item.save()
+        print('Saved')
 
 def get_current_weekdates():
     today = datetime.date.today()

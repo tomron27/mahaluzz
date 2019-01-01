@@ -78,19 +78,19 @@ def solve():
     print('expected num of variables: {}'.format(len(DAYS) * len(HOURS) * len(LESSONS) * len(CLASSES) * len(TEACHERS)))
 
     print('teachers_data')
-    print(teachers_data.head(10))
+    print(teachers_data.head(4))
     print(teachers_data.shape)
 
     print('edu_data')
-    print(edu_data.head(10))
+    print(edu_data.head(4))
     print(edu_data.shape)
 
     print('teachers_lesson_data')
-    print(teachers_lesson_data.head(10))
+    print(teachers_lesson_data.head(4))
     print(teachers_lesson_data.shape)
 
     print('lessons_data')
-    print(lessons_data.head(10))
+    print(lessons_data.head(4))
     print(lessons_data.shape)
 
     lessons_dict = pulp.LpVariable.dicts("variables",
@@ -101,7 +101,7 @@ def solve():
 
     all_data = lessons_data.merge(teachers_data, on=['Teacher', 'Day', 'Hour'])
 
-    print(all_data.head(1))
+    print(all_data.head(4))
 
     model = pulp.LpProblem("Minimize amount of lessons", pulp.LpMinimize)
 
@@ -212,12 +212,17 @@ def solve():
     #     print(expr, '\n\n')
         model += expr
 
-    print(model)
-
     model.solve()
+
+
 
     lessons_output = []
     for k, v in lessons_dict.items():
         if v.varValue == 1:
             lessons_output.append(k)
+
+    print('Model status:', pulp.LpStatus[model.status])
+    print('Solution:')
+    print(lessons_output)
+
     return pulp.LpStatus[model.status], lessons_output
