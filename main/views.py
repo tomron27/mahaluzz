@@ -60,8 +60,7 @@ def login(request):
                     return master(request, master_name, classes_dict)
                 #teacher_class =
                 teacher_name = user_name[0][0]
-                request = render(request, 'teacher.html', {'teacher_name': teacher_name})
-                return teacher(request, teacher_name)
+                return render(request, 'teacher.html', {'teacher_name': teacher_name})
 
     # if a GET (or any other method) we'll create a blank form
     else:
