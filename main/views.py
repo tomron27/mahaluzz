@@ -117,7 +117,9 @@ def constraints(request, teacher_name):
         for i,x in enumerate(con_dict):
             x_list = list(x)
             print(x_list)
-            Tcons = Tconstraint(t_con_id=i, teacher=teacher_name, day_of_week=x_list[1], hour=x_list[3], priority=con_dict[x])
+            u_name = User.objects.get(first_name = teacher_name)
+            print(str(u_name))
+            Tcons = Tconstraint(t_con_id=i, teacher=str(u_name), day_of_week=x_list[1], hour=x_list[3], priority=con_dict[x])
             Tcons.save()
         #save(Tconstraints)
     return render(request, 'constraint.html')
