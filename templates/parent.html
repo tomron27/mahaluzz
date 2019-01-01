@@ -14,13 +14,13 @@
 </script>
 
     <div id="accordion">
-        {% for child,class in child_dict.items %}
+        {% for child, child_data in children_dict.items %}
             <!--child1 dropdown-->
     	    <div  class="card">
     		    <div class="card-header" id="{{child}}">
     			<h5 class="mb-0">
     				<button class="btn btn-info" data-toggle="collapse" data-target="#{{child}}-info" area-controls="{{child}}-info">
-    				{{child}} {{class}}
+    				{{child}} {{child_data.classroom}}
     				</button>
     			</h5>
     		    </div>
@@ -41,9 +41,9 @@
 			                  </p>
 		              		</div>
 			               <div class="col-sm-8" style="background-color:lavender;">
-			                 <div class="googleCalendar">
-			                  	<iframe src="https://calendar.google.com/calendar/embed?title=Put%20your%20Title%20here&amp;showCalendars=0&amp;height=600&amp;wkst=1&amp;bgcolor=%23ffffff&amp;src=8d3fc8l9g04n7r9im45fsn08ak%40group.calendar.google.com&amp;color=%238D6F47&amp;ctz=America%2FNew_York" style="border-width:0" width="700" height="600" frameborder="0" scrolling="no"></iframe>
-			                 </div>
+			                 <div class="container">
+                                {% include "schedule.html" with item=child_data.schedule %}
+                             </div>
 			              	</div>
 
 			          	</div>
