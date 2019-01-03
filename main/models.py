@@ -4,7 +4,8 @@ from django.contrib.auth.models import User, Group
 
 
 class Classroom(models.Model):
-    name = models.CharField(max_length=5, primary_key=True)
+    class_id = models.PositiveIntegerField(primary_key=True)
+    name = models.CharField(max_length=30)
     teacher = models.CharField(max_length=30)
 
     def create(self):
