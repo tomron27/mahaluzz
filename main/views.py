@@ -3,12 +3,11 @@ from .forms import LoginForm, MessageForm
 from .user_auth import check_user
 from django.contrib.auth.models import User, Group
 from .models import *
-import main.lp as lp
+from main.lp import Model
 import itertools
 import datetime
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
-from main.tables_init import *
 
 # Create your views here.
 
@@ -96,16 +95,30 @@ def return_schedule(entity, entity_type):
     hours_with_lessons = [{'hour': k, 'lesson': lesson_dict[k]} for k in lesson_dict]
     return hours_with_lessons
 
-def solve_and_push_schedule():
+def solve_and_save_schedule():
     print('Starting LP problem...')
+    lp = Model()
     sol_status, sol = lp.solve()
     if sol_status == 'Optimal':
+        print('Deleting old schedule...')
         Schedule.objects.all().delete()
-        print('Saving schedule to database...')
-        for i, item in enumerate(sol):
-            sched_item = Schedule(schedule_id=i, day_of_week=item[0], hour=item[1], classroom=item[3], teacher=item[4], subject=item[2])
+        # insert dummy data to schedule
+        print('Inserting dummy schedule to database...')
+        cart = itertools.product(lp.DAYS, lp.HOURS, lp.CLASSES, repeat=1)
+        i = 0
+        for row in cart:
+            sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], classroom=row[2], teacher='no_teacher', subject='חלון')
             sched_item.save()
-        print('Saved')
+            i += 1
+        print('Inserting actual schedule to database...')
+        for j, item in enumerate(sol):
+            # Delete matching dummy schedule item
+            to_del = Schedule.objects.filter(day_of_week=item[0], hour=item[1], classroom=item[3])
+            to_del.delete()
+            # Save new schedule data
+            sched_item = Schedule(schedule_id=j+i, day_of_week=item[0], hour=item[1], classroom=item[3], teacher=item[4], subject=item[2])
+            sched_item.save()
+        print('Schedule Saved')
 
 def get_current_weekdates():
     today = datetime.date.today()
@@ -117,19 +130,24 @@ def get_current_weekdates():
     return dates
 
 def constraints(request, teacher_name):
-    print(teacher_name)
     if request.method == 'POST':
         con_dict = request.POST.dict()
         con_dict.pop("csrfmiddlewaretoken", None)
-        Tconstraints = []
-        for i,x in enumerate(con_dict):
-            x_list = list(x)
-            print(x_list)
-            u_name = User.objects.get(first_name=teacher_name)
-            print(str(u_name))
-            Tcons = Tconstraint(t_con_id=i, teacher=str(u_name), day_of_week=x_list[1], hour=x_list[3], priority=con_dict[x])
+        max_id = 0
+        try:
+            max_id = int(Tconstraint.objects.latest('t_con_id').t_con_id)
+        except:
+            print('Tconstraints is empty')
+        user = User.objects.get(first_name=teacher_name)
+        # Check for existing constraint and delete
+        to_del = Tconstraint.objects.filter(teacher=user.username)
+        if to_del:
+            message = to_del.delete()
+            print('Deleted {} existing constraints for username = "{}"'.format(message[0], user.username))
+        for i, x in enumerate(con_dict):
+            Tcons = Tconstraint(t_con_id=str(max_id+i), teacher=user.username, day_of_week=int(x[1]), hour=int(x[3]), priority=int(con_dict[x]))
             Tcons.save()
-        #save(Tconstraints)
+        print('Inserted {} constraints for username = "{}"'.format(len(con_dict), user.username))
     return render(request, 'constraint.html')
 
 def constraints_test(request, teacher_name=None):
