@@ -10,7 +10,7 @@ class Classroom(models.Model):
     def create(self):
         self.save()
 
-    @property
+    # @property
     def __str__(self):
         return self.name
 

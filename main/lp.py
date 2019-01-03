@@ -73,7 +73,17 @@ def solve():
 
     # Main basis for variables
     lessons_cart = itertools.product(DAYS, HOURS, LESSONS, CLASSES, TEACHERS, repeat=1)
-    lessons_data = pd.DataFrame.from_records(lessons_cart, columns=['Day', 'Hour', 'Lesson', 'Class', 'Teacher'])
+    # lessons_data = pd.DataFrame.from_records(lessons_cart, columns=['Day', 'Hour', 'Lesson', 'Class', 'Teacher'])
+    lessons_data = pd.DataFrame(columns=['Day', 'Hour', 'Lesson', 'Class', 'Teacher'])
+
+    j = 0
+    for row in lessons_cart:
+        if '_' not in row[2] or row[3] in row[2]: # subject is like "sport" or subject matches the class (a1 <=> math_a1)
+            lessons_data.loc[j] = row
+            j += 1
+            # horrible coding
+
+    lessons_data = lessons_data.infer_objects()
 
     print('expected num of variables: {}'.format(len(DAYS) * len(HOURS) * len(LESSONS) * len(CLASSES) * len(TEACHERS)))
 
@@ -209,7 +219,6 @@ def solve():
         expr = (lessons_dict[row.Day, row.Hour, row.Lesson, row.Class, row.Teacher] <=
                 teachers_lesson_data[(teachers_lesson_data['Teacher'] == row.Teacher) &
                                      (teachers_lesson_data['Lesson'] == row.Lesson)]['Value'])
-    #     print(expr, '\n\n')
         model += expr
 
     model.solve()
