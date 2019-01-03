@@ -145,7 +145,7 @@ def constraints(request, teacher_name):
             message = to_del.delete()
             print('Deleted {} existing constraints for username = "{}"'.format(message[0], user.username))
         for i, x in enumerate(con_dict):
-            Tcons = Tconstraint(t_con_id=str(max_id+i), teacher=user.username, day_of_week=int(x[1]), hour=int(x[3]), priority=int(con_dict[x]))
+            Tcons = Tconstraint(t_con_id=max_id+i, teacher=user.username, day_of_week=int(x[1]), hour=int(x[3]), priority=int(con_dict[x]))
             Tcons.save()
         print('Inserted {} constraints for username = "{}"'.format(len(con_dict), user.username))
     return render(request, 'constraint.html')
