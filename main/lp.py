@@ -115,14 +115,19 @@ class Model:
 
         print('all_data')
         print(all_data.head(4))
+        print(all_data.shape)
 
         model = pulp.LpProblem("Minimize amount of lessons", pulp.LpMinimize)
 
         # Objective function build
         expr = []
         for row in all_data.itertuples():
-            expr += lessons_dict[row.Day, row.Hour, row.Lesson, row.Class, row.Teacher] * row.Value * row.Hour * 1000
-        model += expr
+            if row.Day == 6:
+                extraFine = 20
+            else:
+                extraFine = 1
+            expr += lessons_dict[row.Day, row.Hour, row.Lesson, row.Class, row.Teacher] * 2**row.Hour * extraFine
+        model += pulp.lpSum(expr)
 
         # How many hours for every class for every lesson
         for edu_row in edu_data.itertuples():

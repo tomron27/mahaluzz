@@ -43,7 +43,7 @@ class Schedule(models.Model):
         self.save()
 
     def __str__(self):
-        return self.schedule_id
+        return self.subject + '_' + self.classroom
 
 
 class Event(models.Model):

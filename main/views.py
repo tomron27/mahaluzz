@@ -79,13 +79,13 @@ def teacher(request, teacher_name):
     return render(request, 'teacher.html', {'teacher_name': teacher_name})
 
 def return_schedule(entity, entity_type):
-    lesson_dict = {}    # {Entity: Entity Lessons}
     if entity_type == 'Classroom':
-        schedule_queryset = Schedule.objects.filter(classroom=entity).order_by('day_of_week', 'hour')
+        schedule_queryset = Schedule.objects.filter(classroom=entity).order_by('hour', 'day_of_week')
     elif entity_type == 'Teacher':
-        schedule_queryset = Schedule.objects.filter(teacher=entity).order_by('day_of_week', 'hour')
+        schedule_queryset = Schedule.objects.filter(teacher=entity).order_by('hour', 'day_of_week')
 
-    groups = itertools.groupby(schedule_queryset, lambda x: x.day_of_week)
+    lesson_dict = {}    # {Entity: Entity Lessons (schedule objects)}
+    groups = itertools.groupby(schedule_queryset, lambda x: x.hour)
     for key, group in groups:
         if key not in lesson_dict:
             lesson_dict[key] = list(group)
