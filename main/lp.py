@@ -120,6 +120,7 @@ class Model:
         model = pulp.LpProblem("Schedule LP Problem - minimize amount of windows", pulp.LpMinimize)
 
         # Objective function build
+
         # For each class, day, teacher - give high penalty for late scheduling.
         expr = []
         for row in lessons_data[['Day', 'Class', 'Teacher']].drop_duplicates().itertuples():
@@ -185,6 +186,7 @@ class Model:
 
         print('Printing model...')
         with open('model.txt', 'w', encoding="utf-8") as f:
+            print('Datetime:', datetime.datetime.now)
             print(model, file=f)
 
         model.solve()

@@ -9,13 +9,13 @@
     <thead>
       <tr>
       <th>שעה</th>
-        {% for date in child_data.schedule.dates %}
+        {% for date in item_data.schedule.dates %}
             <th>{{ date }}</th>
         {% endfor %}
       </tr>
     </thead>
     <tbody>
-    {% for hour_with_lesson in child_data.schedule.schedule_data %}
+    {% for hour_with_lesson in item_data.schedule.schedule_data %}
         <tr>
             <td>{{hour_with_lesson.hour}}</td>
             {% for lesson in hour_with_lesson.lesson %}

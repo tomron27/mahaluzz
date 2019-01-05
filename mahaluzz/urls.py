@@ -22,9 +22,9 @@ from main import views as user_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
-    path('parent/', user_views.parent, name='parent'),
-    path('master/', user_views.master, name='master'),
-    path('teacher/<str:teacher_name>/', user_views.teacher, name='teacher'),
+    # path('parent/', user_views.parent, name='parent'),
+    # path('master/', user_views.master, name='master'),
+    path('teacher/<str:teacher_name>/', user_views.teacher, include('main.urls'), name='teacher'),
     path('constraint/<str:teacher_name>/', user_views.constraints, name='constraint'),
-    path('constraints_test/<str:teacher_name>/', user_views.constraints_test, name='constraints_test'),
+    # path('constraints_test/<str:teacher_name>/', user_views.constraints_test, name='constraints_test'),
 ]
