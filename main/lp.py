@@ -59,7 +59,7 @@ class Model:
 
         # META DATA
         self.DAYS = [1, 2, 3, 4, 5, 6]
-        self.HOURS = [1, 2, 3, 4, 5, 6]
+        self.HOURS = [1, 2, 3, 4, 5, 6, 7]
         self.LESSONS = self.get_lessons()
         self.CLASSES = self.get_classes()
         self.TEACHERS = self.get_teachers()
@@ -117,17 +117,33 @@ class Model:
         print(all_data.head(4))
         print(all_data.shape)
 
-        model = pulp.LpProblem("Minimize amount of lessons", pulp.LpMinimize)
+        model = pulp.LpProblem("Schedule LP Problem - minimize amount of windows", pulp.LpMinimize)
 
         # Objective function build
+        # For each class, day, teacher - give high penalty for late scheduling.
         expr = []
-        for row in all_data.itertuples():
-            if row.Day == 6:
-                extraFine = 20
-            else:
-                extraFine = 1
-            expr += lessons_dict[row.Day, row.Hour, row.Lesson, row.Class, row.Teacher] * 2**row.Hour * extraFine
+        for row in lessons_data[['Day', 'Class', 'Teacher']].drop_duplicates().itertuples():
+            sub_expr = []
+            for sub_row in lessons_data[(lessons_data['Day'] == row.Day) &
+                                        (lessons_data['Class'] == row.Class) &
+                                        (lessons_data['Teacher'] == row.Teacher)].drop_duplicates().itertuples():
+                if row.Day == 6:    # Penalize friday
+                    sub_expr += lessons_dict[
+                                    row.Day, sub_row.Hour, sub_row.Lesson, row.Class, row.Teacher] * sub_row.Hour * 2
+                else:
+                    sub_expr += lessons_dict[
+                                    row.Day, sub_row.Hour, sub_row.Lesson, row.Class, row.Teacher] * sub_row.Hour
+            expr += sub_expr
         model += pulp.lpSum(expr)
+
+        # Constraints
+
+        # Force break on 4th period
+        lp_sum = []
+        for row in lessons_data[lessons_data['Hour'] == 4].drop_duplicates().itertuples():
+            lp_sum += lessons_dict[row.Day, row.Hour, row.Lesson, row.Class, row.Teacher]
+        expr = (lp_sum == 0)
+        model += expr
 
         # How many hours for every class for every lesson
         for edu_row in edu_data.itertuples():
@@ -166,59 +182,6 @@ class Model:
                     teachers_lesson_data[(teachers_lesson_data['Teacher'] == row.Teacher) &
                                          (teachers_lesson_data['Lesson'] == row.Lesson)]['Value'])
             model += expr
-
-        # # Window variables
-        # L_dict = pulp.LpVariable.dicts("variables",
-        #                                ((row.Day, row.Hour, row.Class, 'L') for row in
-        #                                 lessons_data[['Day', 'Hour', 'Class']].drop_duplicates().itertuples()),
-        #                                lowBound=0,
-        #                                cat='Binary')
-        #
-        # Y_dict = pulp.LpVariable.dicts("variables",
-        #                                ((row.Day, row.Hour, row.Class, 'Y') for row in
-        #                                 lessons_data[['Day', 'Hour', 'Class']].drop_duplicates().itertuples()),
-        #                                lowBound=0,
-        #                                cat='Binary')
-        #
-        # Z_dict = pulp.LpVariable.dicts("variables",
-        #                                ((row.Day, row.Hour, row.Class, 'Z') for row in
-        #                                 lessons_data[['Day', 'Hour', 'Class']].drop_duplicates().itertuples()),
-        #                                lowBound=0,
-        #                                cat='Binary')
-
-        # # Window constraints
-        # for row, L_ijl in L_dict.items():
-        #     lp_sum = []
-        #     for sub_row in lessons_data[(lessons_data['Day'] == row[0]) & (lessons_data['Hour'] == row[1]) & (
-        #             lessons_data['Class'] == row[2])].drop_duplicates().itertuples():
-        #         lp_sum += lessons_dict[sub_row.Day, sub_row.Hour, sub_row.Lesson, sub_row.Class, sub_row.Teacher]
-        #     expr = (L_ijl - lp_sum == 0)
-        #     #     print(expr)
-        #     model += expr
-        #
-        # for row, L_ijl in L_dict.items():
-        #     if row[1] <= max(self.HOURS) - 1:
-        #         expr = (L_dict[row] - L_dict[(row[0], row[1] + 1, row[2], 'L')] + Y_dict[
-        #             (row[0], row[1] + 1, row[2], 'Y')] - Z_dict[(row[0], row[1] + 1, row[2], 'Z')] == 0)
-        #         model += expr
-        #
-        # for row in lessons_data[['Class', 'Day', 'Hour']].drop_duplicates().itertuples():
-        #     lp_sum = []
-        #     for lesson_row in lessons_data[['Class', 'Day', 'Hour']][
-        #         (lessons_data['Class'] == row.Class) & (lessons_data['Day'] == row.Day)].drop_duplicates().itertuples():
-        #         lp_sum += Y_dict[lesson_row.Day, lesson_row.Hour, lesson_row.Class, 'Y']
-        #     expr = (lp_sum <= 1)
-        #     #     print(expr, '\n\n')
-        #     model += expr
-        #
-        # for row in lessons_data[['Class', 'Day', 'Hour']].drop_duplicates().itertuples():
-        #     lp_sum = []
-        #     for lesson_row in lessons_data[['Class', 'Day', 'Hour']][
-        #         (lessons_data['Class'] == row.Class) & (lessons_data['Day'] == row.Day)].drop_duplicates().itertuples():
-        #         lp_sum += Z_dict[lesson_row.Day, lesson_row.Hour, lesson_row.Class, 'Z']
-        #     expr = (lp_sum <= 1)
-        #     #     print(expr, '\n\n')
-        #     model += expr
 
         print('Printing model...')
         with open('model.txt', 'w', encoding="utf-8") as f:
