@@ -9,13 +9,13 @@ import datetime
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 
+# Create your views here.
 
 def login(request):
     # if this is a POST request we need to process the form data
     has_errors = message = False
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        print(request.POST.dict())
         form = LoginForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
@@ -29,44 +29,46 @@ def login(request):
                 uid = user_queryset.values_list('id')
                 user_name = user_queryset.values_list('first_name')
                 user = User.objects.get(id=uid[0][0])
-                user_group = user.groups.all()[0]
-                if user_group.name == 'Parents':
+                user_Group = user.groups.all()[0]
+                if (user_Group.name == 'Parents'):
                     parent_name = user_name[0][0]
                     child_list1 = Student.objects.filter(parent1=user)
                     child_list2 = Student.objects.filter(parent2=user)
                     child_list_query = child_list1.union(child_list2)
-                    data = {}
+                    children_dict = {}
                     for query in child_list_query:
                         child_name = query.first_name
                         classroom = query.classroom
                         schedule = {'dates': dates, 'schedule_data': return_schedule(classroom, 'Classroom')}
-                        data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule}
-                    return render(request, 'parent.html', {'parent_name': parent_name, 'data': data})
-                if user_group.name == 'Master':
+                        messeges = {}
+                        children_dict[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messesges':messeges}
+                    return render(request, 'parent.html', {'parent_name': parent_name, 'children_dict': children_dict})
+                if (user_Group.name == 'Master'):
                     master_name = user_name[0][0]
                     all_classes = Classroom.objects.order_by('name')
-                    data = {}
+                    classes_dict = {}
                     for class_x in all_classes:
-                        teacher_name = User.objects.get(username=class_x.teacher)
-                        schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
-                        data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule}
-                    return render(request, 'master.html', {'master_name': master_name, 'data': data})
-
+                        name_teacher = User.objects.get(username=class_x.teacher)
+                        messages = return_messeges(class_x)
+                        print(messages)
+                        classes_dict[class_x.name] = {'teacher': name_teacher.first_name, 'messages': messages}
+                    return redirect('master', master_name=master_name, classes_dict=classes_dict)
+                #teacher_class =
                 teacher_name = user_name[0][0]
                 # return render(request, 'teacher.html', {'teacher_name': teacher_name})
                 return redirect('teacher', teacher_name=teacher_name)
 
+    # if a GET (or any other method) we'll create a blank form
     else:
         form = LoginForm()
 
     return render(request, 'registration/login.html', {'form': form, 'has_errors': has_errors, 'message': message})
 
-# def parent(request, parent_name,child_dict):
-#     return render(request, 'parent.html', {'parent_name': parent_name, 'child_dict': child_dict})
+def parent(request,parent_name,child_dict):
+    return render(request, 'parent.html', {'parent_name': parent_name, 'child_dict': child_dict})
 
-# def master(request, master_name,classes_dict):
-#     return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
-
+def master(request,master_name,classes_dict):
+    return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
 
 def teacher(request, teacher_name):
     if request.method == 'POST':
@@ -75,9 +77,24 @@ def teacher(request, teacher_name):
         message = request.POST.dict()
         print(type(message), message)
         print(message["textarea"])
-    if request.method == 'POST' and 'btnform1' in request.POST:
-        return constraints(request, teacher_name)
+        max_id = 0
+        try:
+            max_id = int(Messages.objects.latest('messege_id').messege_id)
+        except:
+            print('Messeges is empty')
+        Tmessage = Messages(messege_id=max_id+1, teacher=teacher_name, classroom='א1')
+        Tmessage.save()
     return render(request, 'teacher.html', {'teacher_name': teacher_name})
+
+def return_messeges(entity):
+    try:
+        messages_query = Messages.objects.filter(classroom=entity)
+        messages = {}
+        for message in messages_query:
+            messages[entity] += list(message)
+        return messages
+    except:
+        print('Messeges is empty')
 
 
 def return_schedule(entity, entity_type):
@@ -96,7 +113,6 @@ def return_schedule(entity, entity_type):
 
     hours_with_lessons = [{'hour': k, 'lesson': lesson_dict[k]} for k in lesson_dict]
     return hours_with_lessons
-
 
 def solve_and_save_schedule():
     print('Starting LP problem...')
@@ -123,7 +139,6 @@ def solve_and_save_schedule():
             sched_item.save()
         print('Schedule Saved')
 
-
 def get_current_weekdates():
     today = datetime.date.today()
     last_sunday = today - datetime.timedelta(days=today.weekday()+1)
@@ -132,7 +147,6 @@ def get_current_weekdates():
     for x in raw_dates:
         dates.append((_(x.strftime("%A"))) + ' ' + x.strftime("%d/%m/%y"))
     return dates
-
 
 def constraints(request, teacher_name):
     if request.method == 'POST':
@@ -154,4 +168,7 @@ def constraints(request, teacher_name):
             Tcons.save()
         print('Inserted {} constraints for username = "{}"'.format(len(con_dict), user.username))
     return render(request, 'constraint.html')
+
+def constraints_test(request, teacher_name=None):
+    return render(request, 'constraints_test.html', {'teacher_name': teacher_name})
 
