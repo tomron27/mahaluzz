@@ -98,9 +98,10 @@ class Tsubject(models.Model):
 
 
 class Messages(models.Model):
-    message = models.PositiveIntegerField(primary_key=True)
-    teacher = models.CharField(max_length=31)
+    message_id = models.PositiveIntegerField(primary_key=True)
+    teacher = models.CharField(max_length=30)
     classroom = models.CharField(max_length=5)
+    message = models.CharField(max_length=255)
 
     def create(self):
         self.save()
