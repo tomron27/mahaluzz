@@ -10,4 +10,7 @@ def check_user(username, password):
 
     return False, "הצלחה",user_queryset
 
+def get_user_data(username):
+    # TODO - query custom users database and retrieve relevant user data (children, etc)
+    pass
 

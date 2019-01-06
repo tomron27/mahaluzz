@@ -8,8 +8,14 @@ def save(objects, table=None):
         obj.save()
 
 
-Classrooms = [Classroom(name="א1", teacher="ruti"), Classroom(name="ג1", teacher="shush"),
-              Classroom(name="ב2", teacher="hadar"), Classroom(name="ד2", teacher="shlomit")]
+Classrooms = [Classroom(class_id=0, name="א1", teacher="ruti"), Classroom(class_id=1, name="ג1", teacher="shush"),
+              Classroom(class_id=2, name="ב2", teacher="hadar"), Classroom(class_id=3, name="ד2", teacher="shlomit"),
+              Classroom(class_id=3, name="א1", teacher="nurit"), Classroom(class_id=4, name="ג1", teacher="nurit"),
+              Classroom(class_id=5, name="ב2", teacher="nurit"), Classroom(class_id=6, name="ד2", teacher="nurit"),
+              Classroom(class_id=7, name="א1", teacher="eti"), Classroom(class_id=8, name="ג1", teacher="eti"),
+              Classroom(class_id=9, name="ב2", teacher="eti"), Classroom(class_id=10, name="ד2", teacher="eti"),
+              Classroom(class_id=11, name="א1", teacher="hila"), Classroom(class_id=12, name="ג1", teacher="hila"),
+              Classroom(class_id=13, name="ב2", teacher="hila"), Classroom(class_id=14, name="ד2", teacher="hila"), ]
 
 Students = [Student(id="302077633", first_name="שיר", last_name="כהן", parent1="haimcohen", parent2="dorit",
             classroom="א1", birthday='2013-01-17'), Student(id="302077634", first_name="דורון",
@@ -86,52 +92,8 @@ Aconstraints = [Aconstraint(a_con_id=1, subject="ספורט", h_quantity=2),
                 Aconstraint(a_con_id=32, subject="תורה_ב2", h_quantity=4)
                 ]
 
-Schedules = [Schedule(schedule_id=1, day_of_week=1, hour=1, classroom='א1', teacher='ruti', subject='חשבון'),
-             Schedule(schedule_id=2, day_of_week=1, hour=2, classroom='א1', teacher='ruti', subject='חשבון'),
-             Schedule(schedule_id=3, day_of_week=1, hour=3, classroom='א1', teacher='ruti', subject='מדעים'),
-             Schedule(schedule_id=4, day_of_week=1, hour=4, classroom='א1', teacher='ruti', subject='מדעים'),
-             Schedule(schedule_id=5, day_of_week=1, hour=5, classroom='א1', teacher='ruti', subject='תנ"ך'),
-             Schedule(schedule_id=6, day_of_week=1, hour=6, classroom='א1', teacher='ruti', subject='תנ"ך'),
-             Schedule(schedule_id=7, day_of_week=2, hour=1, classroom='א1', teacher='ruti', subject='חשבון'),
-             Schedule(schedule_id=8, day_of_week=2, hour=2, classroom='א1', teacher='ruti', subject='חשבון'),
-             Schedule(schedule_id=9, day_of_week=2, hour=3, classroom='א1', teacher='ruti', subject='ספרות'),
-             Schedule(schedule_id=10, day_of_week=2, hour=4, classroom='א1', teacher='ruti', subject='ספרות'),
-             Schedule(schedule_id=11, day_of_week=2, hour=5, classroom='א1', teacher='ruti', subject='טוורקינג'),
-             Schedule(schedule_id=12, day_of_week=2, hour=6, classroom='א1', teacher='ruti', subject='טוורקינג'),
-             Schedule(schedule_id=13, day_of_week=3, hour=1, classroom='א1', teacher='ruti', subject='סטוכסטים'),
-             Schedule(schedule_id=14, day_of_week=3, hour=2, classroom='א1', teacher='ruti', subject='סטוכסטים'),
-             Schedule(schedule_id=15, day_of_week=3, hour=3, classroom='א1', teacher='ruti', subject='מד"ר'),
-             Schedule(schedule_id=16, day_of_week=3, hour=4, classroom='א1', teacher='ruti', subject='מד"ר'),
-             Schedule(schedule_id=17, day_of_week=3, hour=5, classroom='א1', teacher='ruti', subject='אינפי 3'),
-             Schedule(schedule_id=18, day_of_week=3, hour=6, classroom='א1', teacher='ruti', subject='אינפי 3'),
-             Schedule(schedule_id=19, day_of_week=4, hour=1, classroom='א1', teacher='ruti', subject='תנ"ך'),
-             Schedule(schedule_id=20, day_of_week=4, hour=2, classroom='א1', teacher='ruti', subject='תנ"ך'),
-             Schedule(schedule_id=21, day_of_week=4, hour=3, classroom='א1', teacher='ruti', subject='האדם וחיות הבית'),
-             Schedule(schedule_id=22, day_of_week=4, hour=4, classroom='א1', teacher='ruti', subject='האדם וחיות הבית'),
-             Schedule(schedule_id=23, day_of_week=4, hour=5, classroom='א1', teacher='ruti', subject='באולינג'),
-             Schedule(schedule_id=24, day_of_week=4, hour=6, classroom='א1', teacher='ruti', subject='באולינג'),
-             Schedule(schedule_id=25, day_of_week=5, hour=1, classroom='א1', teacher='ruti', subject='אנערף'),
-             Schedule(schedule_id=26, day_of_week=5, hour=2, classroom='א1', teacher='ruti', subject='אנערף'),
-             Schedule(schedule_id=27, day_of_week=5, hour=3, classroom='א1', teacher='ruti', subject='אנערף'),
-             Schedule(schedule_id=28, day_of_week=5, hour=4, classroom='א1', teacher='ruti', subject='אנערף'),
-             Schedule(schedule_id=29, day_of_week=5, hour=5, classroom='א1', teacher='ruti', subject='תנ"ך'),
-             Schedule(schedule_id=30, day_of_week=5, hour=6, classroom='א1', teacher='ruti', subject='תנ"ך'),
-             Schedule(schedule_id=31, day_of_week=6, hour=1, classroom='א1', teacher='ruti', subject='ריקוד על עמוד'),
-             Schedule(schedule_id=32, day_of_week=6, hour=2, classroom='א1', teacher='ruti', subject='ריקוד על עמוד'),
-             Schedule(schedule_id=33, day_of_week=6, hour=3, classroom='א1', teacher='ruti', subject='מבוא להעלמת מס'),
-             Schedule(schedule_id=34, day_of_week=6, hour=4, classroom='א1', teacher='ruti', subject='מבוא להעלמת מס'),
-             Schedule(schedule_id=35, day_of_week=6, hour=5, classroom='א1', teacher='ruti', subject='מטעני חבלה 2'),
-             Schedule(schedule_id=36, day_of_week=6, hour=6, classroom='א1', teacher='ruti', subject='מטעני חבלה 2')]
-
-save(Classrooms)
-save(Students)
-save(Events)
-save(Tsubjects)
-save(Schedules, Schedule)
-save(Aconstraints)
-
-def insert_schedule(schedule_output):
-    if schedule_output[0] == 'Optimal':
-        for i, lesson in enumerate(schedule_output[1]):
-            row = Schedule(schedule_id=i, day_of_week=lesson[0], hour=lesson[2], classroom=lesson[3], teacher=lesson[4], subject=lesson[2])
-            row.save()
+save(Classrooms, Classroom)
+save(Students, Student)
+save(Events, Event)
+save(Tsubjects, Tsubject)
+save(Aconstraints, Aconstraint)

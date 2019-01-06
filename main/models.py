@@ -4,19 +4,19 @@ from django.contrib.auth.models import User, Group
 
 
 class Classroom(models.Model):
-    name = models.CharField(max_length=5, primary_key=True)
+    class_id = models.PositiveIntegerField(primary_key=True)
+    name = models.CharField(max_length=30)
     teacher = models.CharField(max_length=30)
 
     def create(self):
         self.save()
 
-    @property
     def __str__(self):
         return self.name
 
 
 class Student(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
+    id = models.PositiveIntegerField(primary_key=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     parent1 = models.CharField(max_length=30)
@@ -32,7 +32,7 @@ class Student(models.Model):
 
 
 class Schedule(models.Model):
-    schedule_id = models.CharField(max_length=10, primary_key=True)
+    schedule_id = models.PositiveIntegerField(primary_key=True)
     day_of_week = models.PositiveIntegerField()
     hour = models.PositiveIntegerField()
     classroom = models.CharField(max_length=5)
@@ -60,7 +60,7 @@ class Event(models.Model):
 
 
 class Tconstraint(models.Model):
-    t_con_id = models.CharField(max_length=10, primary_key=True)
+    t_con_id = models.PositiveIntegerField(primary_key=True)
     teacher = models.CharField(max_length=30)
     day_of_week = models.PositiveIntegerField()
     hour = models.PositiveIntegerField()
@@ -74,7 +74,7 @@ class Tconstraint(models.Model):
 
 
 class Aconstraint(models.Model):
-    a_con_id = models.CharField(max_length=10, primary_key=True)
+    a_con_id = models.PositiveIntegerField(primary_key=True)
     subject = models.CharField(max_length=30)
     h_quantity = models.PositiveIntegerField()
 
@@ -105,4 +105,4 @@ class Messeges(models.Model):
         self.save()
 
     def __str__(self):
-        return self.t_sub_id
+        return self.teacher

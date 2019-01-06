@@ -1,13 +1,13 @@
-from django.shortcuts import render
-from .forms import LoginForm
+from django.shortcuts import render, redirect
+from .forms import LoginForm, MessageForm
 from .user_auth import check_user
 from django.contrib.auth.models import User, Group
 from .models import *
+from main.lp import Model
 import itertools
 import datetime
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
-from main.tables_init import *
 
 # Create your views here.
 
@@ -29,14 +29,7 @@ def login(request):
                 uid = user_queryset.values_list('id')
                 user_name = user_queryset.values_list('first_name')
                 user = User.objects.get(id=uid[0][0])
-                print(user_queryset.values())
-                print(user_name)
-                print(user)
-                print(user_name[0][0])
-                print(user.groups.all()[0])
                 user_Group = user.groups.all()[0]
-                print(type(user_Group))
-                print(user_Group.name)
                 if (user_Group.name == 'Parents'):
                     parent_name = user_name[0][0]
                     child_list1 = Student.objects.filter(parent1=user)
@@ -55,13 +48,12 @@ def login(request):
                     classes_dict = {}
                     for class_x in all_classes:
                         name_teacher = User.objects.get(username=class_x.teacher)
-                        print(name_teacher.first_name)
                         classes_dict[class_x.name] = name_teacher.first_name
-                    print(classes_dict)
-                    return master(request, master_name, classes_dict)
+                    return redirect('master', master_name=master_name, classes_dict=classes_dict)
                 #teacher_class =
                 teacher_name = user_name[0][0]
-                return render(request, 'teacher.html', {'teacher_name': teacher_name})
+                # return render(request, 'teacher.html', {'teacher_name': teacher_name})
+                return redirect('teacher', teacher_name=teacher_name)
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -75,9 +67,13 @@ def parent(request,parent_name,child_dict):
 def master(request,master_name,classes_dict):
     return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
 
-
 def teacher(request, teacher_name):
-    print(request.POST)
+    if request.method == 'POST':
+        print(request.POST)
+        message_form = MessageForm(request.POST)
+        message = request.POST.dict()
+        print(type(message), message)
+        print(message["textarea"])
     if request.method == 'POST' and 'btnform1' in request.POST:
         return constraints(request, teacher_name)
     return render(request, 'teacher.html', {'teacher_name': teacher_name})
@@ -99,6 +95,31 @@ def return_schedule(entity, entity_type):
     hours_with_lessons = [{'hour': k, 'lesson': lesson_dict[k]} for k in lesson_dict]
     return hours_with_lessons
 
+def solve_and_save_schedule():
+    print('Starting LP problem...')
+    lp = Model()
+    sol_status, sol = lp.solve()
+    if sol_status == 'Optimal':
+        print('Deleting old schedule...')
+        Schedule.objects.all().delete()
+        # insert dummy data to schedule
+        print('Inserting dummy schedule to database...')
+        cart = itertools.product(lp.DAYS, lp.HOURS, lp.CLASSES, repeat=1)
+        i = 0
+        for row in cart:
+            sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], classroom=row[2], teacher='no_teacher', subject='חלון')
+            sched_item.save()
+            i += 1
+        print('Inserting actual schedule to database...')
+        for j, item in enumerate(sol):
+            # Delete matching dummy schedule item
+            to_del = Schedule.objects.filter(day_of_week=item[0], hour=item[1], classroom=item[3])
+            to_del.delete()
+            # Save new schedule data
+            sched_item = Schedule(schedule_id=j+i, day_of_week=item[0], hour=item[1], classroom=item[3], teacher=item[4], subject=item[2])
+            sched_item.save()
+        print('Schedule Saved')
+
 def get_current_weekdates():
     today = datetime.date.today()
     last_sunday = today - datetime.timedelta(days=today.weekday()+1)
@@ -109,19 +130,24 @@ def get_current_weekdates():
     return dates
 
 def constraints(request, teacher_name):
-    print(teacher_name)
     if request.method == 'POST':
         con_dict = request.POST.dict()
         con_dict.pop("csrfmiddlewaretoken", None)
-        Tconstraints = []
-        for i,x in enumerate(con_dict):
-            x_list = list(x)
-            print(x_list)
-            u_name = User.objects.get(first_name = teacher_name)
-            print(str(u_name))
-            Tcons = Tconstraint(t_con_id=i, teacher=str(u_name), day_of_week=x_list[1], hour=x_list[3], priority=con_dict[x])
+        max_id = 0
+        try:
+            max_id = int(Tconstraint.objects.latest('t_con_id').t_con_id)
+        except:
+            print('Tconstraints is empty')
+        user = User.objects.get(first_name=teacher_name)
+        # Check for existing constraint and delete
+        to_del = Tconstraint.objects.filter(teacher=user.username)
+        if to_del:
+            message = to_del.delete()
+            print('Deleted {} existing constraints for username = "{}"'.format(message[0], user.username))
+        for i, x in enumerate(con_dict):
+            Tcons = Tconstraint(t_con_id=max_id+i, teacher=user.username, day_of_week=int(x[1]), hour=int(x[3]), priority=int(con_dict[x]))
             Tcons.save()
-        #save(Tconstraints)
+        print('Inserted {} constraints for username = "{}"'.format(len(con_dict), user.username))
     return render(request, 'constraint.html')
 
 def constraints_test(request, teacher_name=None):
