@@ -29,31 +29,29 @@ def login(request):
                 uid = user_queryset.values_list('id')
                 user_name = user_queryset.values_list('first_name')
                 user = User.objects.get(id=uid[0][0])
-                user_Group = user.groups.all()[0]
-                if (user_Group.name == 'Parents'):
+                user_group = user.groups.all()[0]
+                if user_group.name == 'Parents':
                     parent_name = user_name[0][0]
                     child_list1 = Student.objects.filter(parent1=user)
                     child_list2 = Student.objects.filter(parent2=user)
                     child_list_query = child_list1.union(child_list2)
-                    children_dict = {}
+                    data = {}
                     for query in child_list_query:
                         child_name = query.first_name
                         classroom = query.classroom
                         schedule = {'dates': dates, 'schedule_data': return_schedule(classroom, 'Classroom')}
-                        messeges = {}
-                        children_dict[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messesges':messeges}
-                    return render(request, 'parent.html', {'parent_name': parent_name, 'children_dict': children_dict})
-                if (user_Group.name == 'Master'):
+                        data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule}
+                    return render(request, 'parent.html', {'parent_name': parent_name, 'data': data})
+                if user_group.name == 'Master':
                     master_name = user_name[0][0]
                     all_classes = Classroom.objects.order_by('name')
-                    classes_dict = {}
+                    data = {}
                     for class_x in all_classes:
-                        name_teacher = User.objects.get(username=class_x.teacher)
-                        messages = return_messeges(class_x)
-                        print(messages)
-                        classes_dict[class_x.name] = {'teacher': name_teacher.first_name, 'messages': messages}
-                    return redirect('master', master_name=master_name, classes_dict=classes_dict)
-                #teacher_class =
+                        teacher_name = User.objects.get(username=class_x.teacher)
+                        schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
+                        data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule}
+                    return render(request, 'master.html', {'master_name': master_name, 'data': data})
+
                 teacher_name = user_name[0][0]
                 # return render(request, 'teacher.html', {'teacher_name': teacher_name})
                 return redirect('teacher', teacher_name=teacher_name)
@@ -118,22 +116,28 @@ def solve_and_save_schedule():
     print('Starting LP problem...')
     lp = Model()
     sol_status, sol = lp.solve()
-    if sol_status == 'Optimal':
+    if sol_status != 'Optimal':
         print('Problem infeasible. Aborting scheduling...')
     else:
         print('Deleting old schedule...')
         Schedule.objects.all().delete()
         # insert dummy data to schedule
         print('Inserting dummy schedule to database...')
-        cart = itertools.product(lp.DAYS, lp.HOURS, lp.CLASSES, lp.TEACHERS, repeat=1)
+        class_cart = itertools.product(lp.DAYS, lp.HOURS, lp.CLASSES, repeat=1)
+        teacher_cart = itertools.product(lp.DAYS, lp.HOURS, lp.TEACHERS, repeat=1)
         i = 0
-        for row in cart:
+        for row in class_cart:
             if row[1] == 4:
-                sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], classroom=row[2], teacher=row[3],
-                                      subject='הפסקה')
+                sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], classroom=row[2], subject='הפסקה')
             else:
-                sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], classroom=row[2], teacher=row[3],
-                                      subject='חלון')
+                sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], classroom=row[2], subject='')
+            sched_item.save()
+            i += 1
+        for row in teacher_cart:
+            if row[1] == 4:
+                sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], teacher=row[2], subject='הפסקה')
+            else:
+                sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], teacher=row[2], subject='')
             sched_item.save()
             i += 1
         print('Inserting actual schedule to database...')
@@ -148,7 +152,10 @@ def solve_and_save_schedule():
 
 def get_current_weekdates():
     today = datetime.date.today()
-    last_sunday = today - datetime.timedelta(days=today.weekday()+1)
+    if today.weekday() != 6:
+        last_sunday = today - datetime.timedelta(days=today.weekday()+1)
+    else:
+        last_sunday = today
     raw_dates = [last_sunday + datetime.timedelta(days=i) for i in range(6)]
     dates = []
     for x in raw_dates:

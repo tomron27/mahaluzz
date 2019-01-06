@@ -186,7 +186,7 @@ class Model:
 
         print('Printing model...')
         with open('model.txt', 'w', encoding="utf-8") as f:
-            print('Datetime:', datetime.datetime.now)
+            print('Datetime:', datetime.datetime.now(), file=f)
             print(model, file=f)
 
         model.solve()
