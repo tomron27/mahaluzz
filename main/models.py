@@ -96,6 +96,7 @@ class Tsubject(models.Model):
     def __str__(self):
         return self.t_sub_id
 
+
 class Messages(models.Model):
     message = models.PositiveIntegerField(primary_key=True)
     teacher = models.CharField(max_length=31)

@@ -119,14 +119,21 @@ def solve_and_save_schedule():
     lp = Model()
     sol_status, sol = lp.solve()
     if sol_status == 'Optimal':
+        print('Problem infeasible. Aborting scheduling...')
+    else:
         print('Deleting old schedule...')
         Schedule.objects.all().delete()
         # insert dummy data to schedule
         print('Inserting dummy schedule to database...')
-        cart = itertools.product(lp.DAYS, lp.HOURS, lp.CLASSES, repeat=1)
+        cart = itertools.product(lp.DAYS, lp.HOURS, lp.CLASSES, lp.TEACHERS, repeat=1)
         i = 0
         for row in cart:
-            sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], classroom=row[2], teacher='no_teacher', subject='חלון')
+            if row[1] == 4:
+                sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], classroom=row[2], teacher=row[3],
+                                      subject='הפסקה')
+            else:
+                sched_item = Schedule(schedule_id=i, day_of_week=row[0], hour=row[1], classroom=row[2], teacher=row[3],
+                                      subject='חלון')
             sched_item.save()
             i += 1
         print('Inserting actual schedule to database...')
