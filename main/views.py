@@ -142,8 +142,10 @@ def solve_and_save_schedule():
             i += 1
         print('Inserting actual schedule to database...')
         for j, item in enumerate(sol):
-            # Delete matching dummy schedule item
+            # Delete matching dummy schedule item (classes + teachers)
             to_del = Schedule.objects.filter(day_of_week=item[0], hour=item[1], classroom=item[3])
+            to_del.delete()
+            to_del = Schedule.objects.filter(day_of_week=item[0], hour=item[1], teacher=item[4])
             to_del.delete()
             # Save new schedule data
             sched_item = Schedule(schedule_id=j+i, day_of_week=item[0], hour=item[1], classroom=item[3], teacher=item[4], subject=item[2])
