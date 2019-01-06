@@ -50,7 +50,8 @@ def login(request):
                         teacher_name = User.objects.get(username=class_x.teacher)
                         messages = return_messeges(class_x)
                         schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
-                        data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule, 'messages': messages}
+                        data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
+                                              'messages': messages}
                     return render(request, 'master.html', {'master_name': master_name, 'data': data})
 
                 teacher_name = user_name[0][0]
