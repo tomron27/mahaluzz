@@ -99,7 +99,7 @@ class Tsubject(models.Model):
 
 class Messages(models.Model):
     message_id = models.PositiveIntegerField(primary_key=True)
-    teacher = models.CharField(max_length=30)
+    teacher = models.CharField(max_length=35)
     classroom = models.CharField(max_length=5)
     message = models.CharField(max_length=255)
 
