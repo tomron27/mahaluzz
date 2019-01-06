@@ -40,7 +40,8 @@ def login(request):
                         child_name = query.first_name
                         classroom = query.classroom
                         schedule = {'dates': dates, 'schedule_data': return_schedule(classroom, 'Classroom')}
-                        children_dict[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule}
+                        messeges = {}
+                        children_dict[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messesges':messeges}
                     return render(request, 'parent.html', {'parent_name': parent_name, 'children_dict': children_dict})
                 if (user_Group.name == 'Master'):
                     master_name = user_name[0][0]
@@ -48,7 +49,9 @@ def login(request):
                     classes_dict = {}
                     for class_x in all_classes:
                         name_teacher = User.objects.get(username=class_x.teacher)
-                        classes_dict[class_x.name] = name_teacher.first_name
+                        messages = return_messeges(class_x)
+                        print(messages)
+                        classes_dict[class_x.name] = {'teacher': name_teacher.first_name, 'messages': messages}
                     return redirect('master', master_name=master_name, classes_dict=classes_dict)
                 #teacher_class =
                 teacher_name = user_name[0][0]
@@ -74,9 +77,25 @@ def teacher(request, teacher_name):
         message = request.POST.dict()
         print(type(message), message)
         print(message["textarea"])
-    if request.method == 'POST' and 'btnform1' in request.POST:
-        return constraints(request, teacher_name)
+        max_id = 0
+        try:
+            max_id = int(Messages.objects.latest('messege_id').messege_id)
+        except:
+            print('Messeges is empty')
+        Tmessage = Messages(messege_id=max_id+1, teacher=teacher_name, classroom='א1')
+        Tmessage.save()
     return render(request, 'teacher.html', {'teacher_name': teacher_name})
+
+def return_messeges(entity):
+    try:
+        messages_query = Messages.objects.filter(classroom=entity)
+        messages = {}
+        for message in messages_query:
+            messages[entity] += list(message)
+        return messages
+    except:
+        print('Messeges is empty')
+
 
 def return_schedule(entity, entity_type):
     if entity_type == 'Classroom':

@@ -92,6 +92,9 @@ Aconstraints = [Aconstraint(a_con_id=1, subject="ספורט", h_quantity=2),
                 Aconstraint(a_con_id=32, subject="תורה_ב2", h_quantity=4)
                 ]
 
+messeges = [Messeges(messege_id=1, teacher='ruti', classroom='א1')]
+
+save(messeges)
 save(Classrooms, Classroom)
 save(Students, Student)
 save(Events, Event)
