@@ -87,7 +87,7 @@ class Aconstraint(models.Model):
 
 class Tsubject(models.Model):
     t_sub_id = models.CharField(max_length=10, primary_key=True)
-    teacher = models.CharField(max_length=30)
+    teacher = models.CharField(max_length=3)
     subject = models.CharField(max_length=30)
 
     def create(self):
@@ -96,13 +96,13 @@ class Tsubject(models.Model):
     def __str__(self):
         return self.t_sub_id
 
-class Messeges(models.Model):
-    teacher = models.CharField(max_length=30)
+class Messages(models.Model):
+    message = models.PositiveIntegerField(primary_key=True)
+    teacher = models.CharField(max_length=31)
     classroom = models.CharField(max_length=5)
-
 
     def create(self):
         self.save()
 
-    def __str__(self):
-        return self.teacher
+    def _str_(self):
+        return str(self.message)
