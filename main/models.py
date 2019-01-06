@@ -97,12 +97,13 @@ class Tsubject(models.Model):
         return self.t_sub_id
 
 class Messages(models.Model):
-    message = models.PositiveIntegerField(primary_key=True)
+    message_id = models.PositiveIntegerField(primary_key=True)
     teacher = models.CharField(max_length=31)
     classroom = models.CharField(max_length=5)
+    message = models.CharField(max_length=30)
 
     def create(self):
         self.save()
 
     def _str_(self):
-        return str(self.message)
+        return str(self.message_id)

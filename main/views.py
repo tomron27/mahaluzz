@@ -50,7 +50,7 @@ def login(request):
                     for class_x in all_classes:
                         name_teacher = User.objects.get(username=class_x.teacher)
                         messages = return_messeges(class_x)
-                        print(messages)
+                        #print(messages)
                         classes_dict[class_x.name] = {'teacher': name_teacher.first_name, 'messages': messages}
                     return redirect('master', master_name=master_name, classes_dict=classes_dict)
                 #teacher_class =
@@ -82,15 +82,19 @@ def teacher(request, teacher_name):
             max_id = int(Messages.objects.latest('messege_id').messege_id)
         except:
             print('Messeges is empty')
-        Tmessage = Messages(messege_id=max_id+1, teacher=teacher_name, classroom='א1')
+        Tmessage = Messages(message_id=max_id+1, teacher=teacher_name, classroom='א1', message=message["textarea"])
         Tmessage.save()
     return render(request, 'teacher.html', {'teacher_name': teacher_name})
 
 def return_messeges(entity):
+    print(entity)
     try:
         messages_query = Messages.objects.filter(classroom=entity)
+        print(messages_query.values_list())
+        #user_queryset.values_list('first_name')
         messages = {}
         for message in messages_query:
+            print(message)
             messages[entity] += list(message)
         return messages
     except:
