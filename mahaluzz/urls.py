@@ -25,6 +25,5 @@ urlpatterns = [
     path('parent/<str:username>', main_views.parent, name='parent'),
     path('master/<str:username>', main_views.master, name='master'),
     path('teacher/<str:username>/', main_views.teacher, name='teacher'),
-    path('constraint/<str:teacher_name>/', main_views.constraints, name='constraint'),
-    path('constraints_test/<str:teacher_name>/', main_views.constraints_test, name='constraints_test'),
+    path('constraint/<str:username>/', main_views.constraints, name='constraint'),
 ]

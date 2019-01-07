@@ -9,7 +9,6 @@ import datetime
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
 
-# Create your views here.
 
 def login(request):
     has_errors = message = False
@@ -24,7 +23,6 @@ def login(request):
             else:
                 # Resolve entity
                 uid = user_queryset.values_list('id')
-                user_name = user_queryset.values_list('first_name')
                 user = User.objects.get(id=uid[0][0])
                 user_group = user.groups.all()[0]
                 if user_group.name == 'Parents':
@@ -39,6 +37,7 @@ def login(request):
         form = LoginForm()
 
     return render(request, 'registration/login.html', {'form': form, 'has_errors': has_errors, 'message': message})
+
 
 def parent(request, username):
     user_data = User.objects.get(username=username)
@@ -57,6 +56,7 @@ def parent(request, username):
         data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messages': messages}
     return render(request, 'parent.html', {'parent_name': user_data.first_name, 'data': data})
 
+
 def master(request, username):
     user_data = User.objects.get(username=username)
     dates = get_current_weekdates()
@@ -71,6 +71,7 @@ def master(request, username):
         data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
                               'messages': all_messages}
     return render(request, 'master.html', {'master_name': user_data.first_name, 'data': data})
+
 
 def teacher(request, username):
     user_data = User.objects.get(username=username)
@@ -90,7 +91,30 @@ def teacher(request, username):
         Tmessage = Messages(message_id=max_id+1, teacher=username, classroom='א1', message=message["textarea"])
         Tmessage.save()
     schedule = {'dates': dates, 'schedule_data': return_schedule(username, 'Teacher')}
-    return render(request, 'teacher.html', {'teacher_name': user_data.first_name, 'schedule': schedule})
+    return render(request, 'teacher.html', {'username': username, 'teacher_name': user_data.first_name, 'schedule': schedule})
+
+
+def constraints(request, username):
+    user_data = User.objects.get(username=username)
+    if request.method == 'POST':
+        con_dict = request.POST.dict()
+        con_dict.pop("csrfmiddlewaretoken", None)
+        max_id = 0
+        try:
+            max_id = int(Tconstraint.objects.latest('t_con_id').t_con_id)
+        except:
+            print('Tconstraints is empty')
+        # Check for existing constraint and delete
+        to_del = Tconstraint.objects.filter(teacher=user_data.username)
+        if to_del:
+            message = to_del.delete()
+            print('Deleted {} existing constraints for username = "{}"'.format(message[0], user_data.username))
+        for i, x in enumerate(con_dict):
+            Tcons = Tconstraint(t_con_id=max_id+i, teacher=user_data.username, day_of_week=int(x[1]), hour=int(x[3]), priority=int(con_dict[x]))
+            Tcons.save()
+        print('Inserted {} constraints for username = "{}"'.format(len(con_dict), user_data.username))
+    return render(request, 'constraint.html')
+
 
 def return_messeges(entity, messages):
     #print(type(entity.name),entity.name)
@@ -103,7 +127,6 @@ def return_messeges(entity, messages):
         else:
             messages[entity] += message[3]
     return messages
-
 
 
 def return_schedule(entity, entity_type):
@@ -174,28 +197,4 @@ def get_current_weekdates():
     for x in raw_dates:
         dates.append((_(x.strftime("%A"))) + ' ' + x.strftime("%d/%m/%y"))
     return dates
-
-def constraints(request, teacher_name):
-    if request.method == 'POST':
-        con_dict = request.POST.dict()
-        con_dict.pop("csrfmiddlewaretoken", None)
-        max_id = 0
-        try:
-            max_id = int(Tconstraint.objects.latest('t_con_id').t_con_id)
-        except:
-            print('Tconstraints is empty')
-        user = User.objects.get(first_name=teacher_name)
-        # Check for existing constraint and delete
-        to_del = Tconstraint.objects.filter(teacher=user.username)
-        if to_del:
-            message = to_del.delete()
-            print('Deleted {} existing constraints for username = "{}"'.format(message[0], user.username))
-        for i, x in enumerate(con_dict):
-            Tcons = Tconstraint(t_con_id=max_id+i, teacher=user.username, day_of_week=int(x[1]), hour=int(x[3]), priority=int(con_dict[x]))
-            Tcons.save()
-        print('Inserted {} constraints for username = "{}"'.format(len(con_dict), user.username))
-    return render(request, 'constraint.html')
-
-def constraints_test(request, teacher_name=None):
-    return render(request, 'constraints_test.html', {'teacher_name': teacher_name})
 
