@@ -12,12 +12,9 @@ from django.utils.translation import ugettext_lazy as _
 # Create your views here.
 
 def login(request):
-    # if this is a POST request we need to process the form data
     has_errors = message = False
     if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
         form = LoginForm(request.POST)
-        # check whether it's valid:
         if form.is_valid():
             has_errors, message, user_queryset = check_user(form.cleaned_data['username'], form.cleaned_data['password'])
             if has_errors:
@@ -25,43 +22,17 @@ def login(request):
                 return render(request, 'registration/login.html',
                                 {'form': form, 'has_errors': has_errors, 'message': message})
             else:
-                dates = get_current_weekdates()
+                # Resolve entity
                 uid = user_queryset.values_list('id')
                 user_name = user_queryset.values_list('first_name')
                 user = User.objects.get(id=uid[0][0])
                 user_group = user.groups.all()[0]
                 if user_group.name == 'Parents':
-                    parent_name = user_name[0][0]
-                    child_list1 = Student.objects.filter(parent1=user)
-                    child_list2 = Student.objects.filter(parent2=user)
-                    child_list_query = child_list1.union(child_list2)
-                    data = {}
-                    for query in child_list_query:
-                        child_name = query.first_name
-                        classroom = query.classroom
-                        schedule = {'dates': dates, 'schedule_data': return_schedule(classroom, 'Classroom')}
-                        messages = {}
-                        all_messages = return_messeges(classroom,messages)
-                        print(messages)
-                        data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messages': messages}
-                    return render(request, 'parent.html', {'parent_name': parent_name, 'data': data})
+                    return redirect('parent', username=user.username)
                 if user_group.name == 'Master':
-                    master_name = user_name[0][0]
-                    all_classes = Classroom.objects.order_by('name')
-                    data = {}
-                    for class_x in all_classes:
-                        teacher_name = User.objects.get(username=class_x.teacher)
-                        messeges = {}
-                        all_messages = return_messeges(class_x.name,messeges)
-                        print(all_messages)
-                        schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
-                        data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
-                                              'messages': all_messages}
-                    return render(request, 'master.html', {'master_name': master_name, 'data': data})
-
-                teacher_name = user_name[0][0]
-                # return render(request, 'teacher.html', {'teacher_name': teacher_name})
-                return redirect('teacher', teacher_name=teacher_name)
+                    return redirect('master', username=user.username)
+                if user_group.name == 'Teacher':
+                    return redirect('teacher', username=user.username)
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -69,13 +40,41 @@ def login(request):
 
     return render(request, 'registration/login.html', {'form': form, 'has_errors': has_errors, 'message': message})
 
-def parent(request,parent_name,child_dict):
-    return render(request, 'parent.html', {'parent_name': parent_name, 'child_dict': child_dict})
+def parent(request, username):
+    user_data = User.objects.get(username=username)
+    dates = get_current_weekdates()
+    child_list1 = Student.objects.filter(parent1=username)
+    child_list2 = Student.objects.filter(parent2=username)
+    child_list_query = child_list1.union(child_list2)
+    data = {}
+    for query in child_list_query:
+        child_name = query.first_name
+        classroom = query.classroom
+        schedule = {'dates': dates, 'schedule_data': return_schedule(classroom, 'Classroom')}
+        messages = {}
+        all_messages = return_messeges(classroom, messages)
+        print(messages)
+        data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messages': messages}
+    return render(request, 'parent.html', {'parent_name': user_data.first_name, 'data': data})
 
-def master(request,master_name,classes_dict):
-    return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
+def master(request, username):
+    user_data = User.objects.get(username=username)
+    dates = get_current_weekdates()
+    all_classes = Classroom.objects.order_by('name')
+    data = {}
+    for class_x in all_classes:
+        teacher_name = User.objects.get(username=class_x.teacher)
+        messeges = {}
+        all_messages = return_messeges(class_x.name, messeges)
+        print(all_messages)
+        schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
+        data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
+                              'messages': all_messages}
+    return render(request, 'master.html', {'master_name': user_data.first_name, 'data': data})
 
-def teacher(request, teacher_name):
+def teacher(request, username):
+    user_data = User.objects.get(username=username)
+    dates = get_current_weekdates()
     if request.method == 'POST':
         print(request.POST)
         message_form = MessageForm(request.POST)
@@ -88,11 +87,12 @@ def teacher(request, teacher_name):
         except:
             print('Messeges is empty')
         print(max_id)
-        Tmessage = Messages(message_id=max_id+1, teacher=teacher_name, classroom='א1', message=message["textarea"])
+        Tmessage = Messages(message_id=max_id+1, teacher=username, classroom='א1', message=message["textarea"])
         Tmessage.save()
-    return render(request, 'teacher.html', {'teacher_name': teacher_name})
+    schedule = {'dates': dates, 'schedule_data': return_schedule(username, 'Teacher')}
+    return render(request, 'teacher.html', {'teacher_name': user_data.first_name, 'schedule': schedule})
 
-def return_messeges(entity,messages):
+def return_messeges(entity, messages):
     #print(type(entity.name),entity.name)
     messages_query = Messages.objects.filter(classroom=entity)
     print(messages_query.values_list())
