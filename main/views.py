@@ -40,7 +40,10 @@ def login(request):
                         child_name = query.first_name
                         classroom = query.classroom
                         schedule = {'dates': dates, 'schedule_data': return_schedule(classroom, 'Classroom')}
-                        data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule}
+                        messages = {}
+                        all_messages = return_messeges(classroom,messages)
+                        print(messages)
+                        data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messages': messages}
                     return render(request, 'parent.html', {'parent_name': parent_name, 'data': data})
                 if user_group.name == 'Master':
                     master_name = user_name[0][0]
@@ -48,10 +51,12 @@ def login(request):
                     data = {}
                     for class_x in all_classes:
                         teacher_name = User.objects.get(username=class_x.teacher)
-                        messages = return_messeges(class_x)
+                        messeges = {}
+                        all_messages = return_messeges(class_x.name,messeges)
+                        print(all_messages)
                         schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
                         data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
-                                              'messages': messages}
+                                              'messages': all_messages}
                     return render(request, 'master.html', {'master_name': master_name, 'data': data})
 
                 teacher_name = user_name[0][0]
@@ -79,26 +84,26 @@ def teacher(request, teacher_name):
         print(message["textarea"])
         max_id = 0
         try:
-            max_id = int(Messages.objects.latest('messege_id').messege_id)
+            max_id = int(Messages.objects.latest('message_id').message_id)
         except:
             print('Messeges is empty')
+        print(max_id)
         Tmessage = Messages(message_id=max_id+1, teacher=teacher_name, classroom='א1', message=message["textarea"])
         Tmessage.save()
     return render(request, 'teacher.html', {'teacher_name': teacher_name})
 
-def return_messeges(entity):
-    print(entity)
-    try:
-        messages_query = Messages.objects.filter(classroom=entity)
-        print(messages_query.values_list())
-        #user_queryset.values_list('first_name')
-        messages = {}
-        for message in messages_query:
-            print(message)
-            messages[entity] += list(message)
-        return messages
-    except:
-        print('Messeges is empty')
+def return_messeges(entity,messages):
+    #print(type(entity.name),entity.name)
+    messages_query = Messages.objects.filter(classroom=entity)
+    print(messages_query.values_list())
+    for message in messages_query.values_list():
+        #print(type(message[2]), message[2])
+        if entity not in messages:
+            messages[entity] = message[3]
+        else:
+            messages[entity] += message[3]
+    return messages
+
 
 
 def return_schedule(entity, entity_type):
