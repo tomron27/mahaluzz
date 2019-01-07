@@ -12,7 +12,9 @@
 
 <p><h2 class="text-center">שלום {{master_name}}!</h2></p>
       <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="left" title="ברוך הבא! לשליחת הודעות למורים, יש לכתוב את תוכן ההודעות במקום המיועד וללחוץ על כפתור שלח. להרכבת מערכת יש ללחוץ על כפתור הרכבת מערכת. לצפייה במערכות שעות של הכיתות יש לבחור את הכיתה הרצויה. לניהול אירועים יש לבחור את האפשרות המתאימה בכפתור ניהול אירועים.">מבקר בפעם הראשונה?</button>
-
+<script>
+$("#progBar").removeClass('d-none');
+</script>
 <script>
 	$(function () {
   $('[data-toggle="tooltip"]').tooltip()
@@ -20,9 +22,11 @@
 </script>
    <div class="row">
     <div class="col-2">
-        <button type="button" class="btn btn-danger" >הרכבת מערכת</button>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="start_schedule" value="true" class="btn btn-danger" onclick="bar('progBar');">הרכבת מערכת</button>
+        </form>
     </div>
-       
        <div class="col-2">
       <div class="dropdown" align="right">
           <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -93,4 +97,31 @@
     </div>
 
     </div>
+    </div>
+
+<!-- Find somewhere to put this... -->
+<div class="d-none" id="progBar">
+TEST!
+</div>
+<div id="progBar" class="progress">
+  <div id="dynamic" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+    <span id="current-progress"></span>
+  </div>
+</div>
+{#    #}
+{#    {% if "in_progress" in status %}#}
+{#<div class="progress">#}
+{#  <div id="dynamic" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">#}
+{#    <span id="current-progress"></span>#}
+{#  </div>#}
+{#</div>#}
+{#{% elif "success" in status%}#}
+{#    <div class="progress" style="height:30px">#}
+{#        <div class="progress-bar bg-success" style="width:100%;height:30px"><h5>השיבוץ הסתיים בהצלחה!</h5></div>#}
+{#    </div>#}
+{#{% elif "error" in status%}#}
+{#    <div class="progress" style="height:30px">#}
+{#        <div class="progress-bar bg-danger" style="width:100%;height:30px"><h5>השיבוץ נכשל. אנא בדוק את האילוצים ונסה שנית.</h5></div>#}
+{#    </div>#}
+{#{% endif %}#}
 {% endblock %}

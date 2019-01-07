@@ -7,6 +7,8 @@ from main.lp import Model
 import itertools
 import datetime
 from django.http import HttpResponse
+from threading import Thread
+from time import sleep
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -28,7 +30,7 @@ def login(request):
                 if user_group.name == 'Parents':
                     return redirect('parent', username=user.username)
                 if user_group.name == 'Master':
-                    return redirect('master', username=user.username)
+                    return redirect('master', username=user.username, status='normal')
                 if user_group.name == 'Teacher':
                     return redirect('teacher', username=user.username)
 
@@ -57,7 +59,7 @@ def parent(request, username):
     return render(request, 'parent.html', {'parent_name': user_data.first_name, 'data': data})
 
 
-def master(request, username):
+def master(request, username, status):
     user_data = User.objects.get(username=username)
     dates = get_current_weekdates()
     all_classes = Classroom.objects.order_by('name')
@@ -66,11 +68,19 @@ def master(request, username):
         teacher_name = User.objects.get(username=class_x.teacher)
         messeges = {}
         all_messages = return_messeges(class_x.name, messeges)
-        print(all_messages)
+        # print(all_messages)
         schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
         data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
                               'messages': all_messages}
-    return render(request, 'master.html', {'master_name': user_data.first_name, 'data': data})
+    # if request.method == 'POST':
+    #     if request.POST.dict()['start_schedule'] == 'true':
+            # t = Thread(target=master_scheduling, args=(request, username, data))
+            # t.start()
+            # t.join()
+            # return redirect('master', username=username, status='in_progress')
+
+    return render(request, 'master.html', {'master_name': user_data.first_name, 'data': data, 'status': status})
+
 
 
 def teacher(request, username):
@@ -146,12 +156,19 @@ def return_schedule(entity, entity_type):
     hours_with_lessons = [{'hour': k, 'lesson': lesson_dict[k]} for k in lesson_dict]
     return hours_with_lessons
 
+
+def master_scheduling(request, username, data):
+    status = solve_and_save_schedule()
+    return redirect('master', username=username, status=status)
+
+
 def solve_and_save_schedule():
     print('Starting LP problem...')
     lp = Model()
     sol_status, sol = lp.solve()
     if sol_status != 'Optimal':
         print('Problem infeasible. Aborting scheduling...')
+        return 'error'
     else:
         print('Deleting old schedule...')
         Schedule.objects.all().delete()
@@ -185,6 +202,7 @@ def solve_and_save_schedule():
             sched_item = Schedule(schedule_id=j+i, day_of_week=item[0], hour=item[1], classroom=item[3], teacher=item[4], subject=item[2])
             sched_item.save()
         print('Schedule Saved')
+    return 'success'
 
 def get_current_weekdates():
     today = datetime.date.today()
