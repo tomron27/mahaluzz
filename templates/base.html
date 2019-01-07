@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html dir="rtl" lang="he">
 <head>
@@ -24,10 +25,10 @@
 	<div class="jumbotron">
         <div class="row">
             <div class="col" align="left">
-                <img src="static/moriah.jpg" class="rounded-circle float-right" alt="Moriah School Logo">
+                <img src="{%static 'moriah.jpg' %}" class="rounded-circle float-right" alt="Moriah School Logo">
             </div>
             <div class="col" align="left">
-                <img src="static/mahaluzz_mini.jpg" alt="Mahaluzz Logo">
+                <img src="{% static 'mahaluzz_mini.jpg' %}" alt="Mahaluzz Logo">
             </div>
 
         </div>
