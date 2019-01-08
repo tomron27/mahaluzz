@@ -1,33 +1,10 @@
-<!DOCTYPE html>
-<html dir="rtl" lang="he">
-<head>
-  <title>constraints</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</head>
-<body>
-
-<!--logos-->
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-6" align="left">
-    <img src="mahaluzz_mini.jpg" class="rounded" alt="mahaluzz">
-    </div>
-    <div class="col-sm-6" align="right">
-    <img src="moriah.jpg" class="img-circle" alt="moriah">
-    </div>
-  </div>
-</div>
-<!--logos end here-->
+{% extends 'base.html' %}
+{% block content %}
 
 <div class="container" align="right">
-    <h2>:הכנסת אילוצים</h2>
-    <p>.בחר את השעות בהן אתה לא יכול ללמד. סמן אותן באדום</p>
-	<p>.בחר את השעות בהן תוכל ללמד, אולם אתה מעדיף שלא. סמן אותן בצהוב</p>
+    <h2>הכנסת אילוצים:</h2>
+    <p>בחר את השעות בהן אתה לא יכול ללמד. סמן אותן באדום.</p>
+	<p>בחר את השעות בהן תוכל ללמד, אולם אתה מעדיף שלא. סמן אותן בצהוב.</p>
 <form method="post">
 {% csrf_token %}
 	<div class="container">
@@ -348,10 +325,8 @@
     </tbody>
   </table>
 
-   <button type="submit" class="btn btn-primary btn-block">הגש</button>
+   <button type="submit" class="btn btn-info btn-block">הגש</button>
   </form>
 </div>
 
-
-</body>
-</html>
+{% endblock %}
