@@ -8,9 +8,21 @@
      }
      </style>
 
+    <div class="row">
+    <div class="col-6">
+        <p><h2 class="text-right">שלום {{master_name}}!</h2></p>
+    </div>
+    <div class="col-6" align="left">
+        <a href="{% url 'login' %}" >
+                <button class="btn btn-primary" name="back">התנתק</button>
+        </a>
+    </div>
+    </div>
+
+
     <div class="container" align="right">
 
-<p><h2 class="text-center">שלום {{master_name}}!</h2></p>
+
       <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="left" title="ברוך הבא! לשליחת הודעות למורים, יש לכתוב את תוכן ההודעות במקום המיועד וללחוץ על כפתור שלח. להרכבת מערכת יש ללחוץ על כפתור הרכבת מערכת. לצפייה במערכות שעות של הכיתות יש לבחור את הכיתה הרצויה. לניהול אירועים יש לבחור את האפשרות המתאימה בכפתור ניהול אירועים.">מבקר בפעם הראשונה?</button>
 <script>
 $("#progBar").removeClass('d-none');

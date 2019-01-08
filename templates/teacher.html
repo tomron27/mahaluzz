@@ -1,8 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="container" align="right">
 
-<p><h2 class="text-center">שלום {{teacher_name}}!</h2></p>
+    <div class="row">
+    <div class="col-6">
+        <p><h2 class="text-right">שלום {{teacher_name}}!</h2></p>
+    </div>
+    <div class="col-6" align="left">
+        <a href="{% url 'login' %}" >
+            <button class="btn btn-primary" name="back">התנתק</button>
+        </a>
+    </div>
+    </div>
+
+
+    <div class="container" align="right">
          <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="left" title="ברוך הבא! להוספת אילוץ אנה לחץ על כפתור הכנסת אילוץ. לשליחת הודעות להורים, יש לכתוב את תוכן ההודעות במקום המיועד וללחוץ על כפתור שלח. מערכת השעות של הכיתה שלך מופיע משמאל.">מבקר בפעם הראשונה?</button>
 
 <script>
@@ -13,12 +24,29 @@
 
   <div class="container">
     <div class="row">
-    <div class="col-4">
-
-    	<div class="container">
+     <div class="col-4">
+            <div class="row">
+            <div class="col-5" align="right">
             <a href="{% url 'constraint' username %}" >
-    			<button type="submit" name="btnform1" class="btn btn-primary btn-block" >הכנסת אילוץ</button>
+    			<button type="submit" name="btnform1" class="btn btn-success" >הכנסת אילוץ</button>
 			</a>
+            </div>
+
+            <div class="col-5" align="right">
+
+    	    <div class="dropdown">
+                <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> דוחות
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="#">רשימת תלמידים</a>
+                    <a class="dropdown-item" href="#">ריכוז אישורים</a>
+                    <a class="dropdown-item" href="#">רשימת ימי הולדת</a>
+                    <a class="dropdown-item" href="#">הודעות הנהלה</a>
+                </div>
+            </div>
+
+            </div>
+        </div>
 
         <div class="row">
 
@@ -35,28 +63,14 @@
 		</div>
 		</div>
 
-    </div>
-    <div class="col-6">
-     <div class="container">
-         {% include "schedule.html" with schedule=schedule%}
-     </div>
-    </div>
-    <div class="col">
 
-    	<div class="dropdown">
-  <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    דוחות
-      </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" href="#">רשימת תלמידים</a>
-    <a class="dropdown-item" href="#">ריכוז אישורים</a>
-    <a class="dropdown-item" href="#">רשימת ימי הולדת</a>
-    <a class="dropdown-item" href="#">הודעות הנהלה</a>
-    </div>
+        <div class="col-6">
+            <div class="container">
+            {% include "schedule.html" with schedule=schedule%}
+            </div>
+        </div>
     </div>
 
         </div>
-        </div>
-    </div>
     </div>
 {% endblock %}
