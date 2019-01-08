@@ -1,33 +1,10 @@
-<!DOCTYPE html>
-<html dir="rtl" lang="he">
-<head>
-  <title>constraints</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</head>
-<body>
-
-<!--logos-->
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-6" align="left">
-    <img src="static/mahaluzz_mini.jpg" class="rounded" alt="mahaluzz">
-    </div>
-    <div class="col-sm-6" align="right">
-    <img src="static/moriah.jpg" class="img-circle" alt="moriah">
-    </div>
-  </div>
-</div>
-<!--logos end here-->
+{% extends 'base.html' %}
+{% block content %}
 
 <div class="container" align="right">
-    <h2>:הכנסת אילוצים</h2>
-    <p>.בחר את השעות בהן אתה לא יכול ללמד. סמן אותן באדום</p>
-	<p>.בחר את השעות בהן תוכל ללמד, אולם אתה מעדיף שלא. סמן אותן בצהוב</p>
+    <h2>הכנסת אילוצים:</h2>
+    <p>בחר/י את השעות בהן את/ה לא יכול/ה ללמד. סמנ/י אותן באדום.</p>
+	<p>בחר/י את השעות בהן את/ה יכול/ה ללמד אך מעדיפ/ה שלא. סמנ/י אותן בצהוב.</p>
 <form method="post">
 {% csrf_token %}
 	<div class="container">
@@ -50,97 +27,98 @@
        <td>
 	  <select name="M1,1" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	   <td>
 	  <select name="M2,1" class="custom-select mb-3" color="red">
         <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	  <td>
 	  <select name="M3,1" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	   <td>
 	  <select name="M4,1" class="custom-select mb-3" color="red" >
         <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	    <td>
 	  <select name="M5,1" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	     <td>
 	  <select name="M6,1" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
       <tr>
 		 <td>09:00</td>
-		     <td>
+          <td>
 	  <select name="M1,2" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
+      </select>
 	  </td>
 
 	   <td>
 	  <select name="M2,2" class="custom-select mb-3" color="red">
         <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	  <td>
 	  <select name="M3,2" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	   <td>
 	  <select name="M4,2" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	    <td>
 	  <select name="M5,2" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	     <td>
 	  <select name="M6,2" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
@@ -149,48 +127,48 @@
         <td>
 	  <select name="M1,3" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	   <td>
 	  <select name="M2,3" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	  <td>
 	  <select name="M3,3" class="custom-select mb-3" color="red">
        <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	   <td>
 	  <select name="M4,3" class="custom-select mb-3" color="red">
        <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	    <td>
 	  <select name="M5,3" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	     <td>
 	  <select name="M6,3" class="custom-select mb-3" color="red">
           <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
@@ -200,48 +178,48 @@
       <td>
 	  <select name="M1,4" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	   <td>
 	  <select name="M2,4" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	  <td>
 	  <select name="M3,4" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	   <td>
 	  <select name="M4,4" class="custom-select mb-3" color="red">
        <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	    <td>
 	  <select name="M5,4" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	     <td>
 	  <select name="M6,4" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
@@ -252,47 +230,47 @@
        <td>
 	  <select name="M1,5" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	   <td>
 	  <select name="M2,5" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	  <td>
 	  <select name="M3,5" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </td>
 
 	   <td>
 	  <select name="M4,5" class="custom-select mb-3" color="red">
        <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	    <td>
 	  <select name="M5,5" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	     <td>
 	  <select name="M6,5" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
@@ -301,57 +279,55 @@
            <td>
 	  <select name="M1,6" class="custom-select mb-3" color="red">
        <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	   <td>
 	  <select name="M2,6" class="custom-select mb-3" color="red">
         <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	  <td>
 	  <select name="M3,6" class="custom-select mb-3" color="red">
             <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	   <td>
 	  <select name="M4,6" class="custom-select mb-3" color="red">
         <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	    <td>
 	  <select name="M5,6" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
 
 	     <td>
 	  <select name="M6,6" class="custom-select mb-3" color="red">
       <option selected value="0">פנוי</option>
-      <option value="1">מעדיף שלא</option>
-      <option value="2">לא פנוי</option>
+      <option value="10">מעדיף שלא</option>
+      <option value="20">לא פנוי</option>
 	  </select>
 	  </td>
     </tbody>
   </table>
 
    <button type="submit" class="btn btn-primary btn-block">הגש</button>
+    </div>
   </form>
 </div>
-
-
-</body>
-</html>
+{% endblock %}

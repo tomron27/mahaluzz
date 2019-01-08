@@ -10,7 +10,7 @@ def save(objects, table=None):
 
 Classrooms = [Classroom(class_id=0, name="א1", teacher="ruti"), Classroom(class_id=1, name="ג1", teacher="shush"),
               Classroom(class_id=2, name="ב2", teacher="hadar"), Classroom(class_id=3, name="ד2", teacher="shlomit"),
-              Classroom(class_id=3, name="א1", teacher="nurit"), Classroom(class_id=4, name="ג1", teacher="nurit"),
+              Classroom(class_id=15, name="א1", teacher="nurit"), Classroom(class_id=4, name="ג1", teacher="nurit"),
               Classroom(class_id=5, name="ב2", teacher="nurit"), Classroom(class_id=6, name="ד2", teacher="nurit"),
               Classroom(class_id=7, name="א1", teacher="eti"), Classroom(class_id=8, name="ג1", teacher="eti"),
               Classroom(class_id=9, name="ב2", teacher="eti"), Classroom(class_id=10, name="ד2", teacher="eti"),
@@ -92,10 +92,10 @@ Aconstraints = [Aconstraint(a_con_id=1, subject="ספורט", h_quantity=2),
                 Aconstraint(a_con_id=32, subject="תורה_ב2", h_quantity=4)
                 ]
 
-messeges = [Messeges(messege_id=1, teacher='ruti', classroom='א1')]
+messeges = [Messages(message_id=13, teacher='ruti', classroom='א1', message='hello')]
 
-save(messeges)
-save(Classrooms, Classroom)
+save(messeges,Messages)
+save(Classrooms)
 save(Students, Student)
 save(Events, Event)
 save(Tsubjects, Tsubject)

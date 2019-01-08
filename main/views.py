@@ -7,17 +7,16 @@ from main.lp import Model
 import itertools
 import datetime
 from django.http import HttpResponse
+from threading import Thread
+from time import sleep
+from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
 
-# Create your views here.
 
 def login(request):
-    # if this is a POST request we need to process the form data
     has_errors = message = False
     if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
         form = LoginForm(request.POST)
-        # check whether it's valid:
         if form.is_valid():
             has_errors, message, user_queryset = check_user(form.cleaned_data['username'], form.cleaned_data['password'])
             if has_errors:
@@ -25,43 +24,16 @@ def login(request):
                 return render(request, 'registration/login.html',
                                 {'form': form, 'has_errors': has_errors, 'message': message})
             else:
-                dates = get_current_weekdates()
+                # Resolve entity
                 uid = user_queryset.values_list('id')
-                user_name = user_queryset.values_list('first_name')
                 user = User.objects.get(id=uid[0][0])
                 user_group = user.groups.all()[0]
                 if user_group.name == 'Parents':
-                    parent_name = user_name[0][0]
-                    child_list1 = Student.objects.filter(parent1=user)
-                    child_list2 = Student.objects.filter(parent2=user)
-                    child_list_query = child_list1.union(child_list2)
-                    data = {}
-                    for query in child_list_query:
-                        child_name = query.first_name
-                        classroom = query.classroom
-                        schedule = {'dates': dates, 'schedule_data': return_schedule(classroom, 'Classroom')}
-                        messages = {}
-                        all_messages = return_messeges(classroom,messages)
-                        print(messages)
-                        data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messages': messages}
-                    return render(request, 'parent.html', {'parent_name': parent_name, 'data': data})
+                    return redirect('parent', username=user.username)
                 if user_group.name == 'Master':
-                    master_name = user_name[0][0]
-                    all_classes = Classroom.objects.order_by('name')
-                    data = {}
-                    for class_x in all_classes:
-                        teacher_name = User.objects.get(username=class_x.teacher)
-                        messeges = {}
-                        all_messages = return_messeges(class_x.name,messeges)
-                        print(all_messages)
-                        schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
-                        data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
-                                              'messages': all_messages}
-                    return render(request, 'master.html', {'master_name': master_name, 'data': data})
-
-                teacher_name = user_name[0][0]
-                # return render(request, 'teacher.html', {'teacher_name': teacher_name})
-                return redirect('teacher', teacher_name=teacher_name)
+                    return redirect('master', username=user.username, status='normal')
+                if user_group.name == 'Teacher':
+                    return redirect('teacher', username=user.username)
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -69,41 +41,115 @@ def login(request):
 
     return render(request, 'registration/login.html', {'form': form, 'has_errors': has_errors, 'message': message})
 
-def parent(request,parent_name,child_dict):
-    return render(request, 'parent.html', {'parent_name': parent_name, 'child_dict': child_dict})
 
-def master(request,master_name,classes_dict):
-    return render(request, 'master.html', {'master_name': master_name, 'all_classes': classes_dict})
+def parent(request, username):
+    user_data = User.objects.get(username=username)
+    dates = get_current_weekdates()
+    child_list1 = Student.objects.filter(parent1=username)
+    child_list2 = Student.objects.filter(parent2=username)
+    child_list_query = child_list1.union(child_list2)
+    data = {}
+    for query in child_list_query:
+        child_name = query.first_name
+        classroom = query.classroom
+        schedule = {'dates': dates, 'schedule_data': return_schedule(classroom, 'Classroom')}
+        messages = {}
+        all_messages = return_messeges(classroom, messages)
+        #print('class=', classroom, 'messeges=', all_messages)
+        teacher_name = User.objects.get(username=get_base_teacher(classroom)).first_name
+        #print(teacher_name)
+        data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messages': all_messages, 'teacher_name':teacher_name}
+    return render(request, 'parent.html', {'parent_name': user_data.first_name, 'data': data})
 
-def teacher(request, teacher_name):
+
+def master(request, username, status):
+    user_data = User.objects.get(username=username)
+    dates = get_current_weekdates()
+    all_classes = Classroom.objects.order_by('name')
+    data = {}
+    for class_x in all_classes:
+        teacher_name = User.objects.get(username=class_x.teacher)
+        messeges = {}
+        all_messages = return_messeges(class_x.name, messeges)
+        # print(all_messages)
+        schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
+        data[class_x.name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
+                              'messages': all_messages}
+    if request.method == 'POST':
+        #print(request.POST)
+        message_form = MessageForm(request.POST)
+        message = request.POST.dict()
+        base_class = get_base_class()
+        print('base class=', base_class)
+        for class_name in base_class:
+            max_id = 0
+            try:
+                max_id = int(Messages.objects.latest('message_id').message_id)
+            except:
+                print('Messeges is empty')
+            #print(class_name[1])
+            Tmessage = Messages(message_id=max_id+1, teacher=username, classroom=class_name, message=message["textarea"])
+            Tmessage.save()
+    return render(request, 'master.html', {'master_name': user_data.first_name, 'data': data, 'status': status})
+
+
+
+def teacher(request, username):
+    user_data = User.objects.get(username=username)
+    dates = get_current_weekdates()
     if request.method == 'POST':
         print(request.POST)
         message_form = MessageForm(request.POST)
         message = request.POST.dict()
-        print(type(message), message)
-        print(message["textarea"])
+        base_class = get_base_class(username)
+        #print('base class=', list(base_class))
+        for class_name in list(base_class):
+            max_id = 0
+            try:
+                max_id = int(Messages.objects.latest('message_id').message_id)
+            except:
+                print('Messeges is empty')
+            #print(class_name[1])
+            Tmessage = Messages(message_id=max_id+1, teacher=username, classroom=class_name[1], message=message["textarea"])
+            Tmessage.save()
+    schedule = {'dates': dates, 'schedule_data': return_schedule(username, 'Teacher')}
+    return render(request, 'teacher.html', {'username': username, 'teacher_name': user_data.first_name, 'schedule': schedule})
+
+
+def constraints(request, username):
+    user_data = User.objects.get(username=username)
+    if request.method == 'POST':
+        con_dict = request.POST.dict()
+        con_dict.pop("csrfmiddlewaretoken", None)
         max_id = 0
         try:
-            max_id = int(Messages.objects.latest('message_id').message_id)
+            max_id = int(Tconstraint.objects.latest('t_con_id').t_con_id)
         except:
-            print('Messeges is empty')
-        print(max_id)
-        Tmessage = Messages(message_id=max_id+1, teacher=teacher_name, classroom='א1', message=message["textarea"])
-        Tmessage.save()
-    return render(request, 'teacher.html', {'teacher_name': teacher_name})
+            print('Tconstraints is empty')
+        # Check for existing constraint and delete
+        to_del = Tconstraint.objects.filter(teacher=user_data.username)
+        if to_del:
+            message = to_del.delete()
+            print('Deleted {} existing constraints for username = "{}"'.format(message[0], user_data.username))
+        for i, x in enumerate(con_dict):
+            Tcons = Tconstraint(t_con_id=max_id+i, teacher=user_data.username, day_of_week=int(x[1]), hour=int(x[3]), priority=int(con_dict[x]))
+            Tcons.save()
+        print('Inserted {} constraints for username = "{}"'.format(len(con_dict), user_data.username))
+    return render(request, 'constraint.html')
 
-def return_messeges(entity,messages):
+
+def return_messeges(entity, messages):
     #print(type(entity.name),entity.name)
     messages_query = Messages.objects.filter(classroom=entity)
     print(messages_query.values_list())
     for message in messages_query.values_list():
         #print(type(message[2]), message[2])
         if entity not in messages:
-            messages[entity] = message[3]
+            print(message[3])
+            messages[entity] = [message[3]]
         else:
-            messages[entity] += message[3]
+            messages[entity].append(message[3])
     return messages
-
 
 
 def return_schedule(entity, entity_type):
@@ -123,12 +169,19 @@ def return_schedule(entity, entity_type):
     hours_with_lessons = [{'hour': k, 'lesson': lesson_dict[k]} for k in lesson_dict]
     return hours_with_lessons
 
+
+def master_scheduling(request, username, data):
+    status = solve_and_save_schedule()
+    return redirect('master', username=username, status=status)
+
+
 def solve_and_save_schedule():
     print('Starting LP problem...')
     lp = Model()
     sol_status, sol = lp.solve()
     if sol_status != 'Optimal':
         print('Problem infeasible. Aborting scheduling...')
+        return 'error'
     else:
         print('Deleting old schedule...')
         Schedule.objects.all().delete()
@@ -162,6 +215,7 @@ def solve_and_save_schedule():
             sched_item = Schedule(schedule_id=j+i, day_of_week=item[0], hour=item[1], classroom=item[3], teacher=item[4], subject=item[2])
             sched_item.save()
         print('Schedule Saved')
+    return 'success'
 
 def get_current_weekdates():
     today = datetime.date.today()
@@ -175,27 +229,31 @@ def get_current_weekdates():
         dates.append((_(x.strftime("%A"))) + ' ' + x.strftime("%d/%m/%y"))
     return dates
 
-def constraints(request, teacher_name):
-    if request.method == 'POST':
-        con_dict = request.POST.dict()
-        con_dict.pop("csrfmiddlewaretoken", None)
-        max_id = 0
-        try:
-            max_id = int(Tconstraint.objects.latest('t_con_id').t_con_id)
-        except:
-            print('Tconstraints is empty')
-        user = User.objects.get(first_name=teacher_name)
-        # Check for existing constraint and delete
-        to_del = Tconstraint.objects.filter(teacher=user.username)
-        if to_del:
-            message = to_del.delete()
-            print('Deleted {} existing constraints for username = "{}"'.format(message[0], user.username))
-        for i, x in enumerate(con_dict):
-            Tcons = Tconstraint(t_con_id=max_id+i, teacher=user.username, day_of_week=int(x[1]), hour=int(x[3]), priority=int(con_dict[x]))
-            Tcons.save()
-        print('Inserted {} constraints for username = "{}"'.format(len(con_dict), user.username))
-    return render(request, 'constraint.html')
 
-def constraints_test(request, teacher_name=None):
-    return render(request, 'constraints_test.html', {'teacher_name': teacher_name})
+def get_base_teacher(classroom):
+    teacher_list = Classroom.objects.values('teacher').annotate(Count('class_id')).filter(class_id__count=1)
+    #print('values=', teacher_list,type(teacher_list))
+    for arg in teacher_list:
+        #print('args=', arg['teacher'],type(arg))
+        classroom_teacher = Classroom.objects.get(teacher=arg['teacher'])
+        #print(classroom_teacher,type(classroom_teacher))
+        if classroom == classroom_teacher.name:
+            return arg['teacher']
+    #print(teacher,type(teacher))
+    #return teacher
+
+def get_base_class(teacher_name=None):
+    if teacher_name is None:
+        all_classes = Classroom.objects.order_by('name')
+        xlist = all_classes.values_list()
+        xlist = [x[1] for x in xlist]
+        xlist = list(set(xlist))
+        print('all=', xlist)
+        return xlist
+    else:
+        class_list = Classroom.objects.filter(teacher=teacher_name)
+        #print(class_list)
+        return class_list.values_list()
+
+
 
