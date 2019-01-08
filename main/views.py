@@ -72,7 +72,7 @@ def master(request, username, status):
         messeges = {}
         all_messages = return_messeges(class_x.name, messeges)
         # print(all_messages)
-        schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
+        schedule = {'dates': dates, 'schedule_data': return_schedule(class_x.name, 'Classroom')}
         data[class_x.name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
                               'messages': all_messages}
 
@@ -82,6 +82,12 @@ def master(request, username, status):
         redirect('master', username=username, status=status)
 
     if request.method == 'POST':
+        if 'start_schedule' in request.POST.dict():
+            if request.POST.dict()['start_schedule'] == 'true':
+                t = Thread(target=master_scheduling, args=(request, username, data))
+                t.start()
+                return redirect('master', username=username, status='in_progress')
+
         #print(request.POST)
         message_form = MessageForm(request.POST)
         message = request.POST.dict()
@@ -96,11 +102,6 @@ def master(request, username, status):
             #print(class_name[1])
             Tmessage = Messages(message_id=max_id+1, teacher=username, classroom=class_name, message=message["textarea"])
             Tmessage.save()
-    if request.method == 'POST':
-        if request.POST.dict()['start_schedule'] == 'true':
-            t = Thread(target=master_scheduling, args=(request, username, data))
-            t.start()
-            return redirect('master', username=username, status='in_progress')
 
     return render(request, 'master.html', {'master_name': user_data.first_name, 'username': username, 'data': data, 'status': status})
 
@@ -165,7 +166,6 @@ def return_messeges(entity, messages):
     for message in messages_query.values_list():
         #print(type(message[2]), message[2])
         if entity not in messages:
-            print(message[3])
             messages[entity] = [message[3]]
         else:
             messages[entity].append(message[3])
