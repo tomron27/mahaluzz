@@ -56,7 +56,9 @@ def parent(request, username):
         messages = {}
         all_messages = return_messeges(classroom, messages)
         #print('class=', classroom, 'messeges=', all_messages)
-        teacher_name = User.objects.get(username=get_base_teacher(classroom)).first_name
+        user_name = get_base_teacher(classroom)
+        print(user_name)
+        teacher_name = User.objects.get(username=user_name).first_name
         #print(teacher_name)
         data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messages': all_messages, 'teacher_name':teacher_name}
     return render(request, 'parent.html', {'parent_name': user_data.first_name, 'data': data})
@@ -76,26 +78,22 @@ def master(request, username, status):
         data[class_x.name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
                               'messages': all_messages}
     if request.method == 'POST':
-        #print(request.POST)
+        if request.POST.dict()['start_schedule'] == 'true':
+            # t = Thread(target=master_scheduling, args=(request, username, data))
+            # t.start()
+            return redirect('master', username=username, status='in_progress')
+    if request.method == 'POST':
         message_form = MessageForm(request.POST)
         message = request.POST.dict()
         base_class = get_base_class()
-        print('base class=', base_class)
         for class_name in base_class:
             max_id = 0
             try:
                 max_id = int(Messages.objects.latest('message_id').message_id)
             except:
                 print('Messeges is empty')
-            #print(class_name[1])
             Tmessage = Messages(message_id=max_id+1, teacher=username, classroom=class_name, message=message["textarea"])
             Tmessage.save()
-    if request.method == 'POST':
-        if request.POST.dict()['start_schedule'] == 'true':
-            # t = Thread(target=master_scheduling, args=(request, username, data))
-            # t.start()
-            return redirect('master', username=username, status='in_progress')
-
     return render(request, 'master.html', {'master_name': user_data.first_name, 'data': data, 'status': status})
 
 
@@ -108,14 +106,12 @@ def teacher(request, username):
         message_form = MessageForm(request.POST)
         message = request.POST.dict()
         base_class = get_base_class(username)
-        #print('base class=', list(base_class))
         for class_name in list(base_class):
             max_id = 0
             try:
                 max_id = int(Messages.objects.latest('message_id').message_id)
             except:
                 print('Messeges is empty')
-            #print(class_name[1])
             Tmessage = Messages(message_id=max_id+1, teacher=username, classroom=class_name[1], message=message["textarea"])
             Tmessage.save()
     schedule = {'dates': dates, 'schedule_data': return_schedule(username, 'Teacher')}
@@ -124,10 +120,8 @@ def teacher(request, username):
 
 def constraints(request, username):
     user_data = User.objects.get(username=username)
-    print("we are in request method")
     if request.method == 'POST':
         if 'submit' in request.POST.dict():
-            print(request.POST.dict())
             con_dict = request.POST.dict()
             con_dict.pop("csrfmiddlewaretoken", None)
             max_id = 0
@@ -155,11 +149,9 @@ def constraints(request, username):
 def return_messeges(entity, messages):
     #print(type(entity.name),entity.name)
     messages_query = Messages.objects.filter(classroom=entity)
-    print(messages_query.values_list())
     for message in messages_query.values_list():
         #print(type(message[2]), message[2])
         if entity not in messages:
-            print(message[3])
             messages[entity] = [message[3]]
         else:
             messages[entity].append(message[3])
@@ -246,15 +238,12 @@ def get_current_weekdates():
 
 def get_base_teacher(classroom):
     teacher_list = Classroom.objects.values('teacher').annotate(Count('class_id')).filter(class_id__count=1)
-    #print('values=', teacher_list,type(teacher_list))
     for arg in teacher_list:
-        #print('args=', arg['teacher'],type(arg))
+        print(arg['teacher'])
         classroom_teacher = Classroom.objects.get(teacher=arg['teacher'])
-        #print(classroom_teacher,type(classroom_teacher))
         if classroom == classroom_teacher.name:
+            print(arg['teacher'])
             return arg['teacher']
-    #print(teacher,type(teacher))
-    #return teacher
 
 def get_base_class(teacher_name=None):
     if teacher_name is None:
@@ -262,12 +251,15 @@ def get_base_class(teacher_name=None):
         xlist = all_classes.values_list()
         xlist = [x[1] for x in xlist]
         xlist = list(set(xlist))
-        print('all=', xlist)
         return xlist
     else:
         class_list = Classroom.objects.filter(teacher=teacher_name)
-        #print(class_list)
         return class_list.values_list()
 
+def report_stud(request):
+    return render(request, 'stu_names.html')
 
+
+def report_birth(request):
+    return render(request, 'stu_birth.html')
 
