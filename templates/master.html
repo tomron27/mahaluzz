@@ -16,7 +16,6 @@
 
 <script>
     $(function(){
-    $('#btn').click(function() {
         var progressed = 1;
         var interval = setInterval(
             function () {
@@ -27,23 +26,8 @@
                 .text(progressed + "% משבץ...");
             if (progressed >= 100)
                 clearInterval(interval);
-        }, 1 * 100);
+        }, 7 * 100);
     });
-});
-</script>
-<script>
-            $(function () {
-                var progressed = 1;
-                var interval = setInterval(function () {
-                    progressed += 1;
-                    $("#moving-progress-bar")
-                        .css("width", progressed + "%")
-                        .attr("aria-valuenow", progressed)
-                        .text(progressed + "% משבץ...");
-                    if (progressed >= 100)
-                        clearInterval(interval);
-                }, 1 * 100);
-            });
 </script>
 <script>
 	$(function () {
@@ -52,11 +36,11 @@
 </script>
    <div class="row">
     <div class="col-2">
-{#        <form method="post">#}
-{#            {% csrf_token %}#}
-{#            <button type="submit" id="btn" name="start_schedule" value="true" class="btn btn-danger">הרכבת מערכת</button>#}
-{#        </form>#}
-        <button id="btn" type="button" class="btn btn-danger">הרכבת מערכת</button>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" id="btn" name="start_schedule" value="true" class="btn btn-danger">הרכבת מערכת</button>
+        </form>
+{#        <button id="btn" type="button" class="btn btn-danger">הרכבת מערכת</button>#}
     </div>
        <div class="col-2">
       <div class="dropdown" align="right">
@@ -130,8 +114,15 @@
     </div>
     </div>
 
-<!-- Find somewhere to put this... -->
-<div id="progBar" class="progress" style="height: 30px;">
-  <div id="moving-progress-bar" class="progress-bar bg-info progress-bar-striped"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" ></div>
-</div>
+    {% if 'in_progress' in status%}
+    <div id="progBar" class="progress" style="height: 30px;">
+      <div id="moving-progress-bar" class="progress-bar bg-info progress-bar-striped"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" ></div>
+    </div>
+    {% endif %}
+    {% if 'success' in status %}
+        Success
+    {% endif %}
+    {% if 'error' in status %}
+        Error
+    {% endif %}
 {% endblock %}
