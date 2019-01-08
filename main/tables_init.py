@@ -9,7 +9,7 @@ def save(objects, table=None):
 
 
 Classrooms = [Classroom(class_id=0, name="א1", teacher="ruti"), Classroom(class_id=1, name="ג1", teacher="shush"),
-              Classroom(class_id=2, name="ב2", teacher="hadar"), Classroom(class_id=3, name="ד2", teacher="shlomit"),
+              Classroom(class_id=2, name="ב2", teacher="hadar"), Classroom(class_id=15, name="ד2", teacher="shlomit"),
               Classroom(class_id=3, name="א1", teacher="nurit"), Classroom(class_id=4, name="ג1", teacher="nurit"),
               Classroom(class_id=5, name="ב2", teacher="nurit"), Classroom(class_id=6, name="ד2", teacher="nurit"),
               Classroom(class_id=7, name="א1", teacher="eti"), Classroom(class_id=8, name="ג1", teacher="eti"),
