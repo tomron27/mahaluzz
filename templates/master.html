@@ -69,10 +69,12 @@
  </div>
     <div class="row">
         <div class="col-4">
-        <form>
+        <form method="post">
+			 {% csrf_token %}
+			 {{form1.as_p}}
 		        <div class="form-group">
 		    <legend for="textarea" align="right">הודעה להורים רשום כאן:</legend>
-		    <textarea class="form-control" id="textarea" rows="3" style="min-width: 100%;"></textarea>
+		    <textarea class="form-control" id="textarea" name="textarea" rows="3" style="min-width: 100%;"></textarea>
                     <h1> </h1>
 		    <button type="submit" class="btn btn-info" style="padding: padding-top">שלח</button>
 		  		</div>
@@ -87,7 +89,7 @@
     		    <div class="card-header" id="{{item}}">
     			<h5 class="mb-0">
     				<button class="btn btn-info" data-toggle="collapse" data-target="#{{item}}-info" area-controls="{{item}}-info">
-    				{{item}} {{item_data.classroom}}
+    				{{item}}
     				</button>
     			</h5>
     		    </div>
@@ -97,12 +99,14 @@
     			  <div class="container-fluid">
 			          <div class="row">
 		          		   <div class="col-sm-4" style="background-color:lavenderblush;">
-			                  <div class="alert alert-success">
-			                     <strong>יש שיעורי בית במדעים</strong> אפשר לראות אותם <a href="#" class="alert-link">כאן</a>.
-			                  </div>
-			                  <div class="alert alert-info">
-			                     <strong>אנא מלאו אישור הורים לטיול</strong> לשליחת האישור <a href="#" class="alert-link">לחץ כאן</a>.
-			                  </div>
+			                  {% for all_message in item_data.messages.values %}
+                                   {% for message in all_message %}
+			                            <div class="alert alert-success alert-dismissible">
+                                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+			                                <strong>{{message}}</strong>
+			                            </div>
+                                   {% endfor %}
+                               {% endfor %}
 			                  <p>ליצירת קשר עם המורה רותי - 050999000999
 			                  בין השעות 19:00-22:00
 			                  </p>
@@ -117,8 +121,8 @@
     			  </div>
     			</div>
     		</div>
+        </div>
         {% endfor %}
-    </div>
     </div>
         </div>
     </div>

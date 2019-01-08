@@ -9,6 +9,7 @@ import datetime
 from django.http import HttpResponse
 from threading import Thread
 from time import sleep
+from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -54,8 +55,10 @@ def parent(request, username):
         schedule = {'dates': dates, 'schedule_data': return_schedule(classroom, 'Classroom')}
         messages = {}
         all_messages = return_messeges(classroom, messages)
-        print(messages)
-        data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messages': messages}
+        #print('class=', classroom, 'messeges=', all_messages)
+        teacher_name = User.objects.get(username=get_base_teacher(classroom)).first_name
+        #print(teacher_name)
+        data[child_name] = {'name': child_name, 'classroom': classroom, 'schedule': schedule, 'messages': all_messages, 'teacher_name':teacher_name}
     return render(request, 'parent.html', {'parent_name': user_data.first_name, 'data': data})
 
 
@@ -70,8 +73,23 @@ def master(request, username, status):
         all_messages = return_messeges(class_x.name, messeges)
         # print(all_messages)
         schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
-        data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
+        data[class_x.name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
                               'messages': all_messages}
+    if request.method == 'POST':
+        #print(request.POST)
+        message_form = MessageForm(request.POST)
+        message = request.POST.dict()
+        base_class = get_base_class()
+        print('base class=', base_class)
+        for class_name in base_class:
+            max_id = 0
+            try:
+                max_id = int(Messages.objects.latest('message_id').message_id)
+            except:
+                print('Messeges is empty')
+            #print(class_name[1])
+            Tmessage = Messages(message_id=max_id+1, teacher=username, classroom=class_name, message=message["textarea"])
+            Tmessage.save()
     if request.method == 'POST':
         if request.POST.dict()['start_schedule'] == 'true':
             # t = Thread(target=master_scheduling, args=(request, username, data))
@@ -89,16 +107,17 @@ def teacher(request, username):
         print(request.POST)
         message_form = MessageForm(request.POST)
         message = request.POST.dict()
-        print(type(message), message)
-        print(message["textarea"])
-        max_id = 0
-        try:
-            max_id = int(Messages.objects.latest('message_id').message_id)
-        except:
-            print('Messeges is empty')
-        print(max_id)
-        Tmessage = Messages(message_id=max_id+1, teacher=username, classroom='א1', message=message["textarea"])
-        Tmessage.save()
+        base_class = get_base_class(username)
+        #print('base class=', list(base_class))
+        for class_name in list(base_class):
+            max_id = 0
+            try:
+                max_id = int(Messages.objects.latest('message_id').message_id)
+            except:
+                print('Messeges is empty')
+            #print(class_name[1])
+            Tmessage = Messages(message_id=max_id+1, teacher=username, classroom=class_name[1], message=message["textarea"])
+            Tmessage.save()
     schedule = {'dates': dates, 'schedule_data': return_schedule(username, 'Teacher')}
     return render(request, 'teacher.html', {'username': username, 'teacher_name': user_data.first_name, 'schedule': schedule})
 
@@ -140,9 +159,10 @@ def return_messeges(entity, messages):
     for message in messages_query.values_list():
         #print(type(message[2]), message[2])
         if entity not in messages:
-            messages[entity] = message[3]
+            print(message[3])
+            messages[entity] = [message[3]]
         else:
-            messages[entity] += message[3]
+            messages[entity].append(message[3])
     return messages
 
 
@@ -222,4 +242,32 @@ def get_current_weekdates():
     for x in raw_dates:
         dates.append((_(x.strftime("%A"))) + ' ' + x.strftime("%d/%m/%y"))
     return dates
+
+
+def get_base_teacher(classroom):
+    teacher_list = Classroom.objects.values('teacher').annotate(Count('class_id')).filter(class_id__count=1)
+    #print('values=', teacher_list,type(teacher_list))
+    for arg in teacher_list:
+        #print('args=', arg['teacher'],type(arg))
+        classroom_teacher = Classroom.objects.get(teacher=arg['teacher'])
+        #print(classroom_teacher,type(classroom_teacher))
+        if classroom == classroom_teacher.name:
+            return arg['teacher']
+    #print(teacher,type(teacher))
+    #return teacher
+
+def get_base_class(teacher_name=None):
+    if teacher_name is None:
+        all_classes = Classroom.objects.order_by('name')
+        xlist = all_classes.values_list()
+        xlist = [x[1] for x in xlist]
+        xlist = list(set(xlist))
+        print('all=', xlist)
+        return xlist
+    else:
+        class_list = Classroom.objects.filter(teacher=teacher_name)
+        #print(class_list)
+        return class_list.values_list()
+
+
 

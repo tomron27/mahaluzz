@@ -50,13 +50,15 @@
     			  <div class="container-fluid">
 			          <div class="row">
 		          		   <div class="col-sm-4" style="background-color:lavenderblush;">
-			                  <div class="alert alert-success">
-			                     <strong>יש שיעורי בית במדעים</strong> אפשר לראות אותם <a href="#" class="alert-link">כאן</a>.
-			                  </div>
-			                  <div class="alert alert-info">
-			                     <strong>אנא מלאו אישור הורים לטיול</strong> לשליחת האישור <a href="#" class="alert-link">לחץ כאן</a>.
-			                  </div>
-			                  <p>ליצירת קשר עם המורה רותי - 050999000999
+                               {% for all_message in item_data.messages.values %}
+                                   {% for message in all_message %}
+			                            <div class="alert alert-success alert-dismissible">
+                                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+			                                <strong>{{message}}</strong>
+			                            </div>
+                                   {% endfor %}
+                               {% endfor %}
+			                  <p>ליצירת קשר עם המורה {{item_data.teacher_name}} - 050999000999
 			                  בין השעות 19:00-22:00
 			                  </p>
 		              		</div>
