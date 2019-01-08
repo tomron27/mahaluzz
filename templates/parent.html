@@ -10,7 +10,16 @@
     <div class="container" align="right">
 
 	<p>
-    <h2>שלום {{parent_name}}!</h2>
+    <div class="row">
+    <div class="col-6">
+        <p><h2 class="text-right">שלום {{parent_name}}!</h2></p>
+    </div>
+    <div class="col-6" align="left">
+        <a href="{% url 'login' %}" >
+                <button class="btn btn-primary" name="back">התנתק</button>
+        </a>
+    </div>
+    </div>
     </p>
     <p>בחר את התלמיד בו תרצה לצפות:</p>
 
