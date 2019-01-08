@@ -74,10 +74,10 @@ def master(request, username, status):
                               'messages': all_messages}
     # if request.method == 'POST':
     #     if request.POST.dict()['start_schedule'] == 'true':
-            # t = Thread(target=master_scheduling, args=(request, username, data))
-            # t.start()
-            # t.join()
-            # return redirect('master', username=username, status='in_progress')
+    #         t = Thread(target=master_scheduling, args=(request, username, data))
+    #         t.start()
+    #         t.join()
+    #         return redirect('master', username=username, status='in_progress')
 
     return render(request, 'master.html', {'master_name': user_data.first_name, 'data': data, 'status': status})
 
