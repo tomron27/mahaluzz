@@ -90,6 +90,12 @@ def master(request, username, status):
             #print(class_name[1])
             Tmessage = Messages(message_id=max_id+1, teacher=username, classroom=class_name, message=message["textarea"])
             Tmessage.save()
+    if request.method == 'POST':
+        if request.POST.dict()['start_schedule'] == 'true':
+            # t = Thread(target=master_scheduling, args=(request, username, data))
+            # t.start()
+            return redirect('master', username=username, status='in_progress')
+
     return render(request, 'master.html', {'master_name': user_data.first_name, 'data': data, 'status': status})
 
 

@@ -6,6 +6,14 @@ import os
 
 class Model:
 
+    def __init__(self):
+        # META DATA
+        self.DAYS = [1, 2, 3, 4, 5, 6]
+        self.HOURS = [1, 2, 3, 4, 5, 6, 7]
+        self.LESSONS = self.get_lessons()
+        self.CLASSES = self.get_classes()
+        self.TEACHERS = self.get_teachers()
+
     def get_teachers_with_subjects(self):
         query_list = Tsubject.objects.all().values_list()
         teachers = list(set([x[1] for x in query_list]))
@@ -51,18 +59,24 @@ class Model:
         teacher_constraints = teacher_constraints.rename(columns={'teacher': 'Teacher', 'day_of_week': 'Day', 'hour': 'Hour', 'priority': 'Value'})\
             .drop_duplicates()
 
+        teacher_constraints['Value'] = teacher_constraints['Value'].map({0: 1, 10: 10.0, 20: 20.0})  # re-weight teacher constraints
         return teacher_constraints
 
+    def get_lessons_data(self):
+        lessons_cart = itertools.product(self.DAYS, self.HOURS, self.LESSONS, self.CLASSES, self.TEACHERS, repeat=1)
+        # lessons_data = pd.DataFrame.from_records(lessons_cart, columns=['Day', 'Hour', 'Lesson', 'Class', 'Teacher'])
+        lessons_data = pd.DataFrame(columns=['Day', 'Hour', 'Lesson', 'Class', 'Teacher'])
+        j = 0
+        for row in lessons_cart:
+            if '_' not in row[2] or row[3] in row[2]: # subject is like "sport" or subject matches the class (a1 <=> math_a1)
+                lessons_data.loc[j] = row
+                j += 1
+                # horrible coding
+
+        return lessons_data.infer_objects()
 
 
     def solve(self):
-
-        # META DATA
-        self.DAYS = [1, 2, 3, 4, 5, 6]
-        self.HOURS = [1, 2, 3, 4, 5, 6, 7]
-        self.LESSONS = self.get_lessons()
-        self.CLASSES = self.get_classes()
-        self.TEACHERS = self.get_teachers()
 
         # Teacher constraints data
         teachers_data = self.get_teacher_constraints()
@@ -74,19 +88,7 @@ class Model:
         teachers_lesson_data = self.get_teachers_with_subjects()
 
         # Main basis for variables
-        lessons_cart = itertools.product(self.DAYS, self.HOURS, self.LESSONS, self.CLASSES, self.TEACHERS, repeat=1)
-        # lessons_data = pd.DataFrame.from_records(lessons_cart, columns=['Day', 'Hour', 'Lesson', 'Class', 'Teacher'])
-        lessons_data = pd.DataFrame(columns=['Day', 'Hour', 'Lesson', 'Class', 'Teacher'])
-
-        j = 0
-        for row in lessons_cart:
-            if '_' not in row[2] or row[3] in row[2]: # subject is like "sport" or subject matches the class (a1 <=> math_a1)
-                lessons_data.loc[j] = row
-                j += 1
-                # horrible coding
-
-        lessons_data = lessons_data.infer_objects()
-
+        lessons_data = self.get_lessons_data()
         print('expected num of variables: {}'.format(len(self.DAYS) * len(self.HOURS) * len(self.LESSONS) * len(self.CLASSES) * len(self.TEACHERS)))
 
         print('teachers_data')
@@ -112,6 +114,7 @@ class Model:
                                              cat='Binary')
 
         all_data = lessons_data.merge(teachers_data, on=['Teacher', 'Day', 'Hour'])
+        all_data['Value'] = all_data['Value'].fillna(1)
 
         print('all_data')
         print(all_data.head(4))
@@ -120,7 +123,6 @@ class Model:
         model = pulp.LpProblem("Schedule LP Problem - minimize amount of windows", pulp.LpMinimize)
 
         # Objective function build
-
         # For each class, day, teacher - give high penalty for late scheduling.
         expr = []
         for row in lessons_data[['Day', 'Class', 'Teacher']].drop_duplicates().itertuples():
@@ -128,12 +130,21 @@ class Model:
             for sub_row in lessons_data[(lessons_data['Day'] == row.Day) &
                                         (lessons_data['Class'] == row.Class) &
                                         (lessons_data['Teacher'] == row.Teacher)].drop_duplicates().itertuples():
-                if row.Day == 6:    # Penalize friday
+                # Get teacher constraint
+                values = teachers_data[(teachers_data['Day'] == row.Day) &
+                                        (teachers_data['Hour'] == sub_row.Hour) &
+                                        (teachers_data['Teacher'] == row.Teacher)]['Value'].values
+                if len(values) == 0:
+                    value = 1.0
+                else:
+                    value = values[0]
+
+                if row.Day == 6:
                     sub_expr += lessons_dict[
-                                    row.Day, sub_row.Hour, sub_row.Lesson, row.Class, row.Teacher] * sub_row.Hour * 2
+                                    row.Day, sub_row.Hour, sub_row.Lesson, row.Class, row.Teacher] * sub_row.Hour * 1.5 * value
                 else:
                     sub_expr += lessons_dict[
-                                    row.Day, sub_row.Hour, sub_row.Lesson, row.Class, row.Teacher] * sub_row.Hour
+                                    row.Day, sub_row.Hour, sub_row.Lesson, row.Class, row.Teacher] * sub_row.Hour * value
             expr += sub_expr
         model += pulp.lpSum(expr)
 
