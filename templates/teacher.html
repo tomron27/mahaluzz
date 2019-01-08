@@ -2,7 +2,7 @@
 {% block content %}
     <div class="container" align="right">
 
-<p><h2 class="text-right">שלום {{teacher_name}}!</h2></p>
+<p><h2 class="text-center">שלום {{teacher_name}}!</h2></p>
          <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="left" title="ברוך הבא! להוספת אילוץ אנה לחץ על כפתור הכנסת אילוץ. לשליחת הודעות להורים, יש לכתוב את תוכן ההודעות במקום המיועד וללחוץ על כפתור שלח. מערכת השעות של הכיתה שלך מופיע משמאל.">מבקר בפעם הראשונה?</button>
 
 <script>
@@ -16,24 +16,10 @@
     <div class="col-4">
 
     	<div class="container">
-
-            <a href="{% url 'constraint' teacher_name %}" >
-    			<button type="submit" name="btnform1" class="btn btn-danger btn-block" >הכנסת אילוץ</button>
+            <a href="{% url 'constraint' username %}" >
+    			<button type="submit" name="btnform1" class="btn btn-primary btn-block" >הכנסת אילוץ</button>
 			</a>
-            <h1></h1>
-            <div class="row">
-                <div class="dropdown">
-  <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    דוחות
-      </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" href="#">רשימת תלמידים</a>
-    <a class="dropdown-item" href="#">ריכוז אישורים</a>
-    <a class="dropdown-item" href="#">רשימת ימי הולדת</a>
-    <a class="dropdown-item" href="#">הודעות הנהלה</a>
-    </div>
-            </div>
-            </div>
+
         <div class="row">
 
 		 <form method="post">
@@ -41,13 +27,12 @@
 			 {{form1.as_p}}
 		        <div class="form-group">
 		    <legend for="textarea" align="right">הודעה להורים רשום כאן:</legend>
-		    <textarea class="form-control" id="textarea" rows="3" style="min-width: 100%;"></textarea>
+		    <textarea class="form-control" id="textarea" name="textarea" rows="3" style="min-width: 100%;"></textarea>
                     <h1> </h1>
 		    <button type="submit" class="btn btn-info" style="padding: padding-top">שלח</button>
 		  		</div>
 				</form>
 		</div>
-
 		<div class="row">
 			<div class="container" style="background-color: lavenderblush;">
 				<legend for="alertarea" align="right">הודעות קיימות</legend>
@@ -72,13 +57,22 @@
 
     </div>
     <div class="col-6">
-     <div class="googleCalendar">
-      	<iframe src="https://calendar.google.com/calendar/embed?title=Put%20your%20Title%20here&amp;showCalendars=0&amp;height=600&amp;wkst=1&amp;bgcolor=%23ffffff&amp;src=8d3fc8l9g04n7r9im45fsn08ak%40group.calendar.google.com&amp;color=%238D6F47&amp;ctz=America%2FNew_York" style="border-width:0" width="700" height="600" frameborder="0" scrolling="no"></iframe>
+     <div class="container">
+         {% include "schedule.html" with schedule=schedule%}
      </div>
     </div>
     <div class="col">
 
-
+    	<div class="dropdown">
+  <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    דוחות
+      </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="#">רשימת תלמידים</a>
+    <a class="dropdown-item" href="#">ריכוז אישורים</a>
+    <a class="dropdown-item" href="#">רשימת ימי הולדת</a>
+    <a class="dropdown-item" href="#">הודעות הנהלה</a>
+    </div>
     </div>
 
         </div>

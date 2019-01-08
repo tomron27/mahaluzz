@@ -12,7 +12,9 @@
 
 <p><h2 class="text-right">שלום {{master_name}}!</h2></p>
       <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="left" title="ברוך הבא! לשליחת הודעות למורים, יש לכתוב את תוכן ההודעות במקום המיועד וללחוץ על כפתור שלח. להרכבת מערכת יש ללחוץ על כפתור הרכבת מערכת. לצפייה במערכות שעות של הכיתות יש לבחור את הכיתה הרצויה. לניהול אירועים יש לבחור את האפשרות המתאימה בכפתור ניהול אירועים.">מבקר בפעם הראשונה?</button>
-
+<script>
+$("#progBar").removeClass('d-none');
+</script>
 <script>
 	$(function () {
   $('[data-toggle="tooltip"]').tooltip()
@@ -20,7 +22,10 @@
 </script>
    <div class="row">
     <div class="col-2">
-        <button type="button" class="btn btn-danger" >הרכבת מערכת</button>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="start_schedule" value="true" class="btn btn-danger" onclick="bar('progBar');">הרכבת מערכת</button>
+        </form>
     </div>
        <div class="col-2">
       <div class="dropdown" align="right">
@@ -49,18 +54,18 @@
         <div class="col-8" align="center">
             <div class="col">
     <div id="accordion">
-        {% for teacher,class in all_classes.items %}
+        {% for item, item_data in data.items %}
             <!--child1 dropdown-->
     	    <div  class="card">
-    		    <div class="card-header" id="{{teacher}}">
+    		    <div class="card-header" id="{{item}}">
     			<h5 class="mb-0">
-    				<button class="btn btn-info" data-toggle="collapse" data-target="#{{teacher}}-info" area-controls="{{teacher}}-info">
-    				{{teacher}} {{class}}
+    				<button class="btn btn-info" data-toggle="collapse" data-target="#{{item}}-info" area-controls="{{item}}-info">
+    				{{item}} {{item_data.classroom}}
     				</button>
     			</h5>
     		    </div>
             </div>
-            <div id="{{teacher}}-info" class="collapse" area-labelledby="{{teacher}}" data-parent="#accordion">
+            <div id="{{item}}-info" class="collapse" area-labelledby="{{item}}" data-parent="#accordion">
     			<div class="card-body">
     			  <div class="container-fluid">
 			          <div class="row">
@@ -76,10 +81,9 @@
 			                  </p>
 		              		</div>
 			               <div class="col-sm-8" style="background-color:lavender;">
-			                 <div class="googleCalendar">
-			                  	<iframe src="https://calendar.google.com/calendar/embed?title=Put%20your%20Title%20here&amp;showCalendars=0&amp;height=600&amp;wkst=1&amp;bgcolor=%23ffffff&amp;src=8d3fc8l9g04n7r9im45fsn08ak%40group.calendar.google.com&amp;color=%238D6F47&amp;ctz=America%2FNew_York" style="border-width:0" width="700" height="600" frameborder="0" scrolling="no"></iframe>
-			                 </div>
-			              	</div>
+			                 <div class="container">
+                                {% include "schedule.html" with schedule=item_data.schedule %}
+                             </div>
 
 			          	</div>
 
@@ -93,4 +97,31 @@
     </div>
 
     </div>
+    </div>
+
+<!-- Find somewhere to put this... -->
+<div class="d-none" id="progBar">
+TEST!
+</div>
+<div id="progBar" class="progress">
+  <div id="dynamic" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+    <span id="current-progress"></span>
+  </div>
+</div>
+{#    #}
+{#    {% if "in_progress" in status %}#}
+{#<div class="progress">#}
+{#  <div id="dynamic" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">#}
+{#    <span id="current-progress"></span>#}
+{#  </div>#}
+{#</div>#}
+{#{% elif "success" in status%}#}
+{#    <div class="progress" style="height:30px">#}
+{#        <div class="progress-bar bg-success" style="width:100%;height:30px"><h5>השיבוץ הסתיים בהצלחה!</h5></div>#}
+{#    </div>#}
+{#{% elif "error" in status%}#}
+{#    <div class="progress" style="height:30px">#}
+{#        <div class="progress-bar bg-danger" style="width:100%;height:30px"><h5>השיבוץ נכשל. אנא בדוק את האילוצים ונסה שנית.</h5></div>#}
+{#    </div>#}
+{#{% endif %}#}
 {% endblock %}

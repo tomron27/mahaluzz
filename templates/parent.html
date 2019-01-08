@@ -23,18 +23,18 @@
 </script>
 
     <div id="accordion">
-        {% for child, child_data in children_dict.items %}
-            <!--child1 dropdown-->
+        {% for item, item_data in data.items %}
+            <!--item1 dropdown-->
     	    <div  class="card">
-    		    <div class="card-header" id="{{child}}">
+    		    <div class="card-header" id="{{item}}">
     			<h5 class="mb-0">
-    				<button class="btn btn-info" data-toggle="collapse" data-target="#{{child}}-info" area-controls="{{child}}-info">
-    				{{child}} {{child_data.classroom}}
+    				<button class="btn btn-info" data-toggle="collapse" data-target="#{{item}}-info" area-controls="{{item}}-info">
+    				{{item}} {{item_data.classroom}}
     				</button>
     			</h5>
     		    </div>
             </div>
-            <div id="{{child}}-info" class="collapse" area-labelledby="{{child}}" data-parent="#accordion">
+            <div id="{{item}}-info" class="collapse" area-labelledby="{{item}}" data-parent="#accordion">
     			<div class="card-body">
     			  <div class="container-fluid">
 			          <div class="row">
@@ -51,7 +51,7 @@
 		              		</div>
 			               <div class="col-sm-8" style="background-color:lavender;">
 			                 <div class="container">
-                                {% include "schedule.html" with item=child_data.schedule %}
+                                {% include "schedule.html" with schedule=item_data.schedule %}
                              </div>
 			              	</div>
 
