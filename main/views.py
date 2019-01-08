@@ -72,13 +72,19 @@ def master(request, username, status):
         schedule = {'dates': dates, 'schedule_data': return_schedule(teacher_name, 'Teacher')}
         data[teacher_name] = {'name': teacher_name, 'classroom': class_x.name, 'schedule': schedule,
                               'messages': all_messages}
+
+    if status == 'done':
+        print('done!')
+        status = Status.objects.get(id=0).status
+        redirect('master', username=username, status=status)
+
     if request.method == 'POST':
         if request.POST.dict()['start_schedule'] == 'true':
-            # t = Thread(target=master_scheduling, args=(request, username, data))
-            # t.start()
+            t = Thread(target=master_scheduling, args=(request, username, data))
+            t.start()
             return redirect('master', username=username, status='in_progress')
 
-    return render(request, 'master.html', {'master_name': user_data.first_name, 'data': data, 'status': status})
+    return render(request, 'master.html', {'master_name': user_data.first_name, 'username': username, 'data': data, 'status': status})
 
 
 
@@ -175,6 +181,10 @@ def solve_and_save_schedule():
     sol_status, sol = lp.solve()
     if sol_status != 'Optimal':
         print('Problem infeasible. Aborting scheduling...')
+        query = Status.objects.all()
+        query.delete()
+        Status(id=0, status='error').save()
+        print('Deleted problem status from DB')
         return 'error'
     else:
         print('Deleting old schedule...')
@@ -209,6 +219,10 @@ def solve_and_save_schedule():
             sched_item = Schedule(schedule_id=j+i, day_of_week=item[0], hour=item[1], classroom=item[3], teacher=item[4], subject=item[2])
             sched_item.save()
         print('Schedule Saved')
+        query = Status.objects.all()
+        query.delete()
+        Status(id=0, status='success').save()
+        print('Saved problem status to DB')
     return 'success'
 
 def get_current_weekdates():

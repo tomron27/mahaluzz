@@ -6,23 +6,12 @@
          outline: none;
      }
      </style>
-    <div class="row">
-    <div class="col-6" align="right">
-        <p>
-        <h2>שלום {{parent_name}}!</h2>
-        </p>
-    </div>
-        <div class="col-6" align="left">
-            <a href="{% url 'login' %}" >
-                <button class="btn btn-primary" name="back">התנתק</button>
-            </a>
-        </div>
-    </div>
-
 
     <div class="container" align="right">
 
-
+	<p>
+    <h2>שלום {{parent_name}}!</h2>
+    </p>
     <p>בחר את התלמיד בו תרצה לצפות:</p>
 
    <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="left" title="ברוך הבא! בחר שם של תלמיד אותו תרצה לראות. בחלון שיפתח יופיעו הודעות כיתתיות מהמורה מימין, ומערכת שעות עדכנית מצד שמאל">מבקר בפעם הראשונה?</button>
