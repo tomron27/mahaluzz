@@ -27,4 +27,6 @@ urlpatterns = [
     path('master/<str:username>/<str:status>', main_views.master, name='master'),
     path('teacher/<str:username>/', main_views.teacher, name='teacher'),
     path('constraint/<str:username>/', main_views.constraints, name='constraint'),
+    path('stu/', main_views.report_stud, name='stu'),
+    path('birth/', main_views.report_birth, name='birth'),
 ]

@@ -14,7 +14,7 @@
     </div>
     <div class="col-6" align="left">
         <a href="{% url 'login' %}" >
-                <button class="btn btn-primary" name="back">התנתק</button>
+                <br><button class="btn btn-primary" name="back">התנתק</button>
         </a>
     </div>
     </div>
@@ -38,7 +38,7 @@
                 .text(progressed + "% משבץ...");
             if (progressed >= 100)
                 clearInterval(interval);
-        }, 7 * 100);
+        }, 11 * 100);
     });
 </script>
 <script>
@@ -46,6 +46,16 @@
   $('[data-toggle="tooltip"]').tooltip()
 })
 </script>
+    {% if 'in_progress' in status %}
+    <script>
+    function redirect(){
+       window.location.href = "done";
+    }
+    setTimeout(redirect, 11 * 1000 * 10); //2000 is equivalent to 2 seconds
+</script>
+
+    {% endif %}
+
    <div class="row">
     <div class="col-2">
         <form method="post">
@@ -54,21 +64,7 @@
         </form>
 {#        <button id="btn" type="button" class="btn btn-danger">הרכבת מערכת</button>#}
     </div>
-       <div class="col-2">
-      <div class="dropdown" align="right">
-          <button class="btn btn-outline-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-  ניהול אירועים
-  </button>
-
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <a class="dropdown-item" href="#">הוספת אירוע</a>
-    <a class="dropdown-item" href="#">עריכת אירוע</a>
-  </div>
-      </div>
-     </div>
- </div>
-    <div class="row">
-        <div class="col-4">
+    <div class="col-9">
         <form method="post">
 			 {% csrf_token %}
 			 {{form1.as_p}}
@@ -79,8 +75,11 @@
 		    <button type="submit" class="btn btn-info" style="padding: padding-top">שלח</button>
 		  		</div>
         </form>
+
+ </div>
+    <div class="row">
     </div>
-        <div class="col-8" align="center">
+        <div class="col-12" align="center">
             <div class="col">
     <div id="accordion">
         {% for item, item_data in data.items %}
@@ -98,7 +97,7 @@
     			<div class="card-body">
     			  <div class="container-fluid">
 			          <div class="row">
-		          		   <div class="col-sm-4" style="background-color:lavenderblush;">
+		          		   <div class="col-sm-3" style="background-color:lavenderblush;">
 			                  {% for all_message in item_data.messages.values %}
                                    {% for message in all_message %}
 			                            <div class="alert alert-success alert-dismissible">
@@ -111,7 +110,7 @@
 			                  בין השעות 19:00-22:00
 			                  </p>
 		              		</div>
-			               <div class="col-sm-8" style="background-color:lavender;">
+			               <div class="col-sm-8">
 			                 <div class="container">
                                 {% include "schedule.html" with schedule=item_data.schedule %}
                              </div>
@@ -136,9 +135,9 @@
     </div>
     {% endif %}
     {% if 'success' in status %}
-        Success
+        <button type="button" class="btn btn-success">השיבוץ בוצע בהצלחה! יש לרענן את העמוד</button>
     {% endif %}
     {% if 'error' in status %}
-        Error
+        <button type="button" class="btn btn-danger">שגיאה בשיבוץ. אנא בדוק את האילוצים ונסה שנית</button>
     {% endif %}
 {% endblock %}

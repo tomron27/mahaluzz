@@ -6,12 +6,20 @@
     <title>Title</title>
 </head>
 <body>
+<div class="table table-m table-responsive-xl">
   <table class="table">
-    <thead>
+    <thead class="thead-light">
       <tr>
       <th>שעה</th>
         {% for date in schedule.dates %}
             <th>{{ date }}</th>
+        {% endfor %}
+      </tr>
+      <tr>
+      <td><b>אירועים</b></td>
+        {% for date in schedule.dates %}
+            <td>
+            </td>
         {% endfor %}
       </tr>
     </thead>
@@ -31,5 +39,6 @@
     {% endfor %}
     </tbody>
   </table>
+</div>
 </body>
 </html>
