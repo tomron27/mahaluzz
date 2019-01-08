@@ -10,6 +10,7 @@
 <div class="row justify-content-center">
 <form method="post">
   {% csrf_token %}
+    <div class="container rounded" style="background:rgba(155,181,255,0.3)">
   <h2>ברוך הבא למערכת מה הלו"ז!</h2>
   <p align="center">אנא הכנס פרטים</p>
   <div class="form-group row justify-content-center">
@@ -47,8 +48,9 @@
 	    <div class="alert alert-danger row justify-content-center col-sm-8" role="alert">{{ message }}</div>
       {% endif %}
   </div>
-{##}
-{#<br><br><br><br><br><br><br><br><br><br><br><br>#}
+</div>
+
+<br><br><br><br><br><br><br><br><br><br><br><br>
 </form>
 </div>
 </div>
