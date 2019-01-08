@@ -106,24 +106,32 @@ def teacher(request, username):
 
 def constraints(request, username):
     user_data = User.objects.get(username=username)
+    print("we are in request method")
     if request.method == 'POST':
-        con_dict = request.POST.dict()
-        con_dict.pop("csrfmiddlewaretoken", None)
-        max_id = 0
-        try:
-            max_id = int(Tconstraint.objects.latest('t_con_id').t_con_id)
-        except:
-            print('Tconstraints is empty')
-        # Check for existing constraint and delete
-        to_del = Tconstraint.objects.filter(teacher=user_data.username)
-        if to_del:
-            message = to_del.delete()
-            print('Deleted {} existing constraints for username = "{}"'.format(message[0], user_data.username))
-        for i, x in enumerate(con_dict):
-            Tcons = Tconstraint(t_con_id=max_id+i, teacher=user_data.username, day_of_week=int(x[1]), hour=int(x[3]), priority=int(con_dict[x]))
-            Tcons.save()
-        print('Inserted {} constraints for username = "{}"'.format(len(con_dict), user_data.username))
-    return render(request, 'constraint.html')
+        if 'submit' in request.POST.dict():
+            print(request.POST.dict())
+            con_dict = request.POST.dict()
+            con_dict.pop("csrfmiddlewaretoken", None)
+            max_id = 0
+            try:
+                max_id = int(Tconstraint.objects.latest('t_con_id').t_con_id)
+            except:
+                print('Tconstraints is empty')
+            # Check for existing constraint and delete
+            to_del = Tconstraint.objects.filter(teacher=user_data.username)
+            if to_del:
+                message = to_del.delete()
+                print('Deleted {} existing constraints for username = "{}"'.format(message[0], user_data.username))
+            for i, x in enumerate(con_dict):
+                if x[0] == 'M':
+                    Tcons = Tconstraint(t_con_id=max_id+i, teacher=user_data.username, day_of_week=int(x[1]), hour=int(x[3]), priority=int(con_dict[x]))
+                    Tcons.save()
+            print('Inserted {} constraints for username = "{}"'.format(len(con_dict), user_data.username))
+            return redirect('teacher', username=username)
+        if 'back' in request.POST.dict():
+            print(request.POST.dict())
+            return redirect('teacher', username=username)
+    return render(request, 'constraint.html', {'username': username})
 
 
 def return_messeges(entity, messages):

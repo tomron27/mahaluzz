@@ -1,8 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="container" align="right">
 
-<p><h2 class="text-right">שלום {{teacher_name}}!</h2></p>
+    <div class="row">
+    <div class="col-6">
+        <p><h2 class="text-right">שלום {{teacher_name}}!</h2></p>
+    </div>
+    <div class="col-6" align="left">
+        <a href="{% url 'login' %}" >
+            <button class="btn btn-primary" name="back">התנתק</button>
+        </a>
+    </div>
+    </div>
+
+
+    <div class="container" align="right">
          <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="left" title="ברוך הבא! להוספת אילוץ אנה לחץ על כפתור הכנסת אילוץ. לשליחת הודעות להורים, יש לכתוב את תוכן ההודעות במקום המיועד וללחוץ על כפתור שלח. מערכת השעות של הכיתה שלך מופיע משמאל.">מבקר בפעם הראשונה?</button>
 
 <script>
@@ -17,7 +28,7 @@
             <div class="row">
             <div class="col-5" align="right">
             <a href="{% url 'constraint' username %}" >
-    			<button type="submit" name="btnform1" class="btn btn-primary" >הכנסת אילוץ</button>
+    			<button type="submit" name="btnform1" class="btn btn-success" >הכנסת אילוץ</button>
 			</a>
             </div>
 

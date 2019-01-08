@@ -3,8 +3,8 @@
 
 <div class="container" align="right">
     <h2>הכנסת אילוצים:</h2>
-    <p>בחר/י את השעות בהן את/ה לא יכול/ה ללמד. סמנ/י אותן באדום.</p>
-	<p>בחר/י את השעות בהן את/ה יכול/ה ללמד אך מעדיפ/ה שלא. סמנ/י אותן בצהוב.</p>
+    <p>בחר/י את השעות בהן את/ה לא יכול/ה ללמד. סמנ/י אותן כלא םנוי.</p>
+	<p>בחר/י את השעות בהן את/ה יכול/ה ללמד אך מעדיפ/ה שלא. סמנ/י אותן כמעדיף שלא.</p>
 <form method="post">
 {% csrf_token %}
 	<div class="container">
@@ -326,7 +326,25 @@
     </tbody>
   </table>
 
-   <button type="submit" class="btn btn-primary btn-block">הגש</button>
+        <div class="row">
+        <div class="col-6">
+            <button type="submit" class="btn btn-success btn-lg" name="submit">   הגש   </button>
+        </div>
+        <div class="col-6" align="left">
+            <a href="{% url 'teacher' username %}" >
+                <button class="btn btn-info btn-lg" name="back">חזור לעמור מורה</button>
+            </a>
+        </div>
+        </div>
+        <h4>
+        <p>
+
+        </p>
+        <p>
+
+        </p>
+        </h4>
+
     </div>
   </form>
 </div>
