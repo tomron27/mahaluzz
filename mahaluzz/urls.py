@@ -21,7 +21,8 @@ from main import views as main_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('main.urls'), name='login'),
+    path('', main_views.login, name='login'),
+    # path('', include('main.urls'), name='login'),
     path('parent/<str:username>', main_views.parent, name='parent'),
     path('master/<str:username>/<str:status>', main_views.master, name='master'),
     path('teacher/<str:username>/', main_views.teacher, name='teacher'),
