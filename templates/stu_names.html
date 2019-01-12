@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
-	<p>רשימת תלמידים בכיתך:</p>
+<div class="container" align="right">
+	<h2>רשימת תלמידים בכיתך:</h2>
 
-	<div class="container">
+
   <table class="table table-bordered">
     <thead>
       <tr>
@@ -115,7 +116,11 @@
     </tbody>
   </table>
 
-   <button type="button" class="btn btn-primary">הדפס</button>
+   <button type="button" class="btn btn-primary left">הדפס</button>
+
+    <br><br>
+
+    </div>
         {% endblock %}
 
 
